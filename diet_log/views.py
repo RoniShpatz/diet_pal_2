@@ -1,22 +1,25 @@
 from django.shortcuts import render
-from .models import Book, Author, BookInstance, Genre
+from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MilesForm
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
+@login_required
 def index(request):
-    """View function for home page of site."""
-    # Generate counts of some of the main objects
-    num_books = Book.objects.all().count()
-    num_instances = BookInstance.objects.all().count()
-    # Available books (status = 'a')
-    num_instances_available = BookInstance.objects.filter(status__exact='a').count()
-    # The 'all()' is implied by default.
-    num_authors = Author.objects.count()
+    current_date = timezone.now().date()
     context = {
-        'num_books': num_books,
-        'num_instances': num_instances,
-        'num_instances_available': num_instances_available,
-        'num_authors': num_authors,
+        'water_form': WaterForm(),
+        'current_date': current_date,
+        'weight_form': WeightForm(),
+        'workout_form': WorkoutForm(),
+        'miels_form': MilesForm(),
     }
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 # Create your views here.

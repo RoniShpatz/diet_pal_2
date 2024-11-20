@@ -1,17 +1,37 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Local Library Home</h1>
-  <p>
-    Welcome to LocalLibrary, a website developed by
-    <em>Mozilla Developer Network</em>!
-  </p>
-  <h2>Dynamic content</h2>
-  <p>The library has the following record counts:</p>
-  <ul>
-    <li><strong>Books:</strong> {{ num_books }}</li>
-    <li><strong>Copies:</strong> {{ num_instances }}</li>
-    <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
-    <li><strong>Authors:</strong> {{ num_authors }}</li>
-  </ul>
+  <h1>My Progress</h1>
+  <form method="post">
+    {% csrf_token %}
+    <h4>Water</h4>
+    {{ water_form.as_p }}
+    <div>
+        <input type="submit" name="water_submit" value="Submit Water">
+        <input type="reset" value="Reset Water">
+    </div>
+    
+    <h4>Weight</h4>
+    {{ weight_form.as_p }}
+    <div>
+        <input type="submit" name="weight_submit" value="Submit Weight">
+        <input type="reset" value="Reset Weight">
+    </div>
+    
+    <h4>Workout</h4>
+    {{ workout_form.as_p }}
+    <div>
+        <input type="submit" name="workout_submit" value="Submit Workout">
+        <input type="reset" value="Reset Workout">
+    </div>
+
+</form>
+<form>
+  <h4>Miles Log</h4>
+  {{miels_form}}
+  <div>
+    <input type="submit" name="miels_submit" value="Submit Miles">
+    <input type="reset" value="Reset Miels">
+</div>
+</form>
 {% endblock %}

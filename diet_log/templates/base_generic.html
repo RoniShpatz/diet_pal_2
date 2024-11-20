@@ -24,8 +24,19 @@
           {% block sidebar %}
             <ul class="sidebar-nav">
               <li><a href="{% url 'index' %}">Home</a></li>
-              <li><a href="">All books</a></li>
-              <li><a href="">All authors</a></li>
+              <li><a href="">Diet Blog</a></li>
+              {% if user.is_authenticated %}
+              <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onclick="document.getElementById('logout-form').submit()">
+                  Logout
+              </button>
+              <form id="logout-form" method="POST" action="{% url 'logout' %}" class="hidden">
+                  {% csrf_token %}
+              </form>
+          {% else %}
+              <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                  Login
+              </button>
+          {% endif %}
             </ul>
           {% endblock %}
         </div>
