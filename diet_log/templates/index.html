@@ -1,37 +1,55 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+
+  {% if messages %}
+  <ul class="messages">
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+
   <h1>{{ user.username }}'s Progress</h1>
+ <!-- Water Form -->
+  <div>
+    <h5>Add Water</h5>
+    <form method="post">
+      {% csrf_token %}
+      {{ water_form.as_p }}
+      <button type="submit" name="submit_water">Add Water</button>
+    </form>  
+  </div>
+
+<!-- Weight Form -->
+ <div>
+  <h5>Add Weight</h5>
+    <form method="post">
+      {% csrf_token %}
+      {{ weight_form.as_p }}
+      <button type="submit" name="submit_weight">Add Weight</button>
+    </form>
+ </div>
+
+<!-- Workout Form -->
+ <div>
+  <h5>Add Workout</h5>
+    <form method="post">
+      {% csrf_token %}
+      {{ workout_form.as_p }}
+      <button type="submit" name="submit_workout">Add Workout</button>
+    </form>
+ </div>
+
+
+<!-- Miles Form -->
+<div>
+  <h5>Add Meal</h5>
   <form method="post">
     {% csrf_token %}
-    <h4>Water</h4>
-    {{ water_form.as_p }}
-    <div>
-        <input type="submit" name="water_submit" value="Submit Water">
-        <input type="reset" value="Reset Water">
-    </div>
-    
-    <h4>Weight</h4>
-    {{ weight_form.as_p }}
-    <div>
-        <input type="submit" name="weight_submit" value="Submit Weight">
-        <input type="reset" value="Reset Weight">
-    </div>
-    
-    <h4>Workout</h4>
-    {{ workout_form.as_p }}
-    <div>
-        <input type="submit" name="workout_submit" value="Submit Workout">
-        <input type="reset" value="Reset Workout">
-    </div>
-
-</form>
-<form>
-  <h4>Miles Log</h4>
-  {{miels_form}}
-  <div>
-    <input type="submit" name="miels_submit" value="Submit Miles">
-    <input type="reset" value="Reset Miels">
+    {{ meals_form.as_p }}
+    <button type="submit" name="submit_meal">Add Meal</button>
+  </form>
 </div>
-</form>
+
 {% endblock %}

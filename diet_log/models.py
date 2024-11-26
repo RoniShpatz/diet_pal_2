@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 
 class Water(models.Model):
     id = models.AutoField(primary_key=True)
-    mil = models.IntegerField()  # Assuming numbers represent milliliters
+    mil = models.IntegerField()  #numbers represent milliliters
     date = models.DateField()
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -38,19 +38,19 @@ class Workout(models.Model):
         return f"{self.name} workout on {self.date}"
     
 
-class Miles(models.Model):
+class Meals(models.Model):
     id = models.AutoField(primary_key=True)
     content = models.CharField(max_length=200)
     date = models.DateField()
     time = models.TimeField()
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.content} mile on {self.date} time {self.time}"
+        return f"{self.content} meal on {self.date} time {self.time}"
     
-class FavMiles(models.Model):
+class FavMeals(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=20) 
     content = models.CharField(max_length=200)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.content} for user {self.user_id}"
+        return f"{self.content} for user {self.user_id}" 

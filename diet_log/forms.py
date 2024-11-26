@@ -5,6 +5,7 @@ from crispy_forms.layout import Layout, Submit
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import Meals, Water, Wieght, Workout, FavMeals
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
@@ -23,40 +24,63 @@ class LoginForm(AuthenticationForm):
             Submit('submit', 'Login', css_class='btn btn-primary')
         )
 
-class WaterForm(forms.Form):
-    ammount = forms.IntegerField()
-    date = forms.DateField(initial=timezone.now().date())
+class WaterForm(forms.ModelForm):
+    class Meta:
+        model = Water  
+        fields = ['mil', 'date']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date'].initial = timezone.now().date()
 
+class WeightForm(forms.ModelForm):
+    class Meta:
+        model = Wieght 
+        fields = ['amount', 'date']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date'].initial = timezone.now().date()
 
-class WeightForm(forms.Form):
-    ammount = forms.IntegerField()
-    date = forms.DateField(initial=timezone.now().date())
-
-class WeightForm(forms.Form):
-    amount = forms.IntegerField()
-    date = forms.DateField(initial=timezone.now().date())
-
-class WorkoutForm(forms.Form):
-    WORKOUT_CHOICES = [
+WORKOUT_CHOICES = [
         (1, 'pilates'),
         (2, 'swimming'),
         (3, 'running'),
         (4, 'walking')
     ]
-    
-    minutes = forms.IntegerField()
-    date = forms.DateField(initial=timezone.now().date())
-    name = forms.ChoiceField(choices=WORKOUT_CHOICES)
 
-class MilesForm(forms.Form):
-    time = forms.TimeField(
-        initial=timezone.now().time(), 
-        widget=forms.TimeInput(attrs={'type': 'time'})
-    )
-    date = forms.DateField(initial=timezone.now().date())
-    content = forms.CharField(
-        widget=forms.Textarea,
-        max_length=200,
-        help_text="Maximum 200 characters"
-    )
+class WorkoutForm(forms.ModelForm):
+    class Meta:
+        model = Workout  # Assuming you have a Workout model
+        fields = ['name', 'duration', 'date']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'name': forms.Select(choices=WORKOUT_CHOICES)
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date'].initial = timezone.now().date()
+
+class MealsForm(forms.ModelForm):
+    class Meta:
+        model = Meals  # Assuming you have a Meals model
+        fields = ['content', 'date', 'time']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'time': forms.TimeInput(attrs={'type': 'time'}),
+            'content': forms.Textarea(attrs={'rows': 3, 'max_length': 200})
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date'].initial = timezone.now().date()
+        self.fields['time'].initial = timezone.now().time()
+        self.fields['content'].help_text = "Maximum 200 characters"
 
