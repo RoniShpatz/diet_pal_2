@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>My Progress</h1>
+  <h1>{{ user.username }}'s Progress</h1>
   <form method="post">
     {% csrf_token %}
     <h4>Water</h4>
