@@ -42,7 +42,7 @@ def signup(request):
     return render(request, 'signup.html', {'form': form})
 
 
-def your_view(request):
+def view(request):
     current_date = timezone.now().date()
     
     if request.method == 'POST':
