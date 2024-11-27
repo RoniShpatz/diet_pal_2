@@ -11,45 +11,54 @@
   {% endif %}
 
   <h1>{{ user.username }}'s Progress</h1>
- <!-- Water Form -->
-  <div>
-    <h5>Add Water</h5>
-    <form method="post">
-      {% csrf_token %}
-      {{ water_form.as_p }}
-      <button type="submit" name="submit_water">Add Water</button>
-    </form>  
+ 
+  {% for entry in water_entries %}
+  <p>{{entry.mil}} ml </p>
+  <p>{{entry.date}}</p>
+  {% endfor %}
+
+  <div class="forms">
+    <!-- Water Form -->
+      <div>
+        <h5>Add Water</h5>
+        <form method="post">
+          {% csrf_token %}
+          {{ water_form.as_p }}
+          <button type="submit" name="submit_water">Add Water</button>
+        </form>  
+      </div>
+    
+    <!-- Weight Form -->
+    <div>
+      <h5>Add Weight</h5>
+        <form method="post">
+          {% csrf_token %}
+          {{ weight_form.as_p }}
+          <button type="submit" name="submit_weight">Add Weight</button>
+        </form>
+    </div>
+    
+    <!-- Workout Form -->
+    <div>
+      <h5>Add Workout</h5>
+        <form method="post">
+          {% csrf_token %}
+          {{ workout_form.as_p }}
+          <button type="submit" name="submit_workout">Add Workout</button>
+        </form>
+    </div>
+    
+    
+    <!-- Miles Form -->
+    <div>
+      <h5>Add Meal</h5>
+      <form method="post">
+        {% csrf_token %}
+        {{ meals_form.as_p }}
+        <button type="submit" name="submit_meal">Add Meal</button>
+      </form>
+    </div>
   </div>
-
-<!-- Weight Form -->
- <div>
-  <h5>Add Weight</h5>
-    <form method="post">
-      {% csrf_token %}
-      {{ weight_form.as_p }}
-      <button type="submit" name="submit_weight">Add Weight</button>
-    </form>
- </div>
-
-<!-- Workout Form -->
- <div>
-  <h5>Add Workout</h5>
-    <form method="post">
-      {% csrf_token %}
-      {{ workout_form.as_p }}
-      <button type="submit" name="submit_workout">Add Workout</button>
-    </form>
- </div>
-
-
-<!-- Miles Form -->
-<div>
-  <h5>Add Meal</h5>
-  <form method="post">
-    {% csrf_token %}
-    {{ meals_form.as_p }}
-    <button type="submit" name="submit_meal">Add Meal</button>
-  </form>
-</div>
+ 
 
 {% endblock %}
