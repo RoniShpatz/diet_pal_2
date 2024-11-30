@@ -20,7 +20,7 @@ class Wieght(models.Model):
     date = date = models.DateField()
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.amount} ml on {self.date}"
+        return f"{self.amount} kg"
     
 class Workout(models.Model):
     id = models.AutoField(primary_key=True)
@@ -30,7 +30,7 @@ class Workout(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.name} workout on {self.date}"
+        return f"{self.name} for {self.duration} minutes"
     
 
 class Meals(models.Model):
@@ -40,7 +40,7 @@ class Meals(models.Model):
     time = models.TimeField()
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.content} meal on {self.date} time {self.time}"
+        return f"{self.time.strftime('%H:%M')} : {self.content}"
     
 class FavMeals(models.Model):
     id = models.AutoField(primary_key=True)

@@ -10,24 +10,30 @@ from django.shortcuts import render, redirect
 from .forms import SignUpForm
 from django.contrib import messages
 from .models import Water, Wieght, Workout, Meals
+from django.db.models import Sum
+from django.utils.timezone import timedelta
 
 
 @login_required
 def index(request):
-    current_date = timezone.now().date()
+    if 'current_date' not in request.session:
+        request.session['current_date'] = timezone.now().date().strftime('%Y-%m-%d')
+    current_date = timezone.datetime.strptime(request.session['current_date'], '%Y-%m-%d').date()
 
-    
     # Fetch existing data for the logged-in user
-    water_entries = Water.objects.filter(user_id=request.user).order_by('-date')
-    weight_entries =  Wieght.objects.filter(user_id=request.user).order_by('-date')
-    workout_entries = Workout.objects.filter(user_id=request.user).order_by('-date')
-    meals_entries = Meals.objects.filter(user_id=request.user).order_by('-date')
+    water_entries = Water.objects.filter(user_id=request.user, date=current_date)
+    total_water = water_entries.aggregate(Sum('mil'))['mil__sum'] or 0
+
+    weight =  Wieght.objects.filter(user_id=request.user, date=current_date)
+    workout = Workout.objects.filter(user_id=request.user, date=current_date)
+    
+
+    meals_entries = Meals.objects.filter(user_id=request.user, date=current_date).order_by('time')
 
     context = {
-        'current_date': current_date,
-        'water_entries': water_entries,
-        'weight_entries': weight_entries,
-        'workout_entries': workout_entries,
+        'water_total': total_water,
+        'weight': weight,
+        'workout': workout,
         'meals_entries': meals_entries,
         'water_form': WaterForm(),
         'current_date': current_date,
@@ -49,6 +55,7 @@ def index(request):
             if water_form.is_valid():
                 water_entry = water_form.save(commit=False)
                 water_entry.user_id = request.user
+                water_entry.date = water_form.cleaned_data['date']
                 water_entry.save()
                 messages.success(request, 'Water entry added successfully!')
                 return redirect('index')
@@ -61,6 +68,7 @@ def index(request):
             if weight_form.is_valid():
                 weight_entry = weight_form.save(commit=False)
                 weight_entry.user_id = request.user
+                weight_entry.date = weight_form.cleaned_data['date']
                 weight_entry.save()
                 messages.success(request, 'Weight entry added successfully!')
                 return redirect('index')
@@ -71,6 +79,7 @@ def index(request):
             if workout_form.is_valid():
                 workout_entry = workout_form.save(commit=False)
                 workout_entry.user_id = request.user
+                workout_entry.date = workout_form.cleaned_data['date']
                 workout_entry.save()
                 messages.success(request, 'Workout entry added successfully!')
                 return redirect('index')
@@ -81,9 +90,20 @@ def index(request):
             if meals_form.is_valid():
                 meals_entry = meals_form.save(commit=False)
                 meals_entry.user_id = request.user
+                meals_entry.date = meals_form.cleaned_data['date']
                 meals_entry.save()
                 messages.success(request, 'Meal entry added successfully!')
                 return redirect('index')
+            
+        # date display info
+        elif 'prev_date' in request.POST:
+            current_date -= timedelta(days=1)
+            request.session['current_date'] = current_date.strftime('%Y-%m-%d')
+            return redirect('index')
+        elif 'next_date' in request.POST:
+            current_date += timedelta(days=1)
+            request.session['current_date'] = current_date.strftime('%Y-%m-%d')
+            return redirect('index')
     return render(request, 'index.html', context=context)
 
 

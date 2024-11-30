@@ -10,13 +10,56 @@
   </ul>
   {% endif %}
 
-  <h1>{{ user.username }}'s Progress</h1>
- 
-  {% for entry in water_entries %}
-  <p>{{entry.mil}} ml </p>
-  <p>{{entry.date}}</p>
-  {% endfor %}
+  <h1>{{ user.username }}'s Progress {{ current_date|date:"M. d, Y" }}</h1>
+  <div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="prev_date"><</button>
+        <button type="submit" name="next_date">></button>
+    </form>
+</div>
+ <div>
+  <h4>Water</h4>
+  {% if water_total %}
+  <p>{{water_total}} ml</p>
+ {% else %}
+     <p>No water for this date yet.</p>
+ {% endif %}
+ </div>
+ <div>
 
+  <h4>Weight</h4>
+  {% if  weight %}
+    {% for num in weight %}
+      <p>{{num}}</p>
+    {% endfor %}
+ {% else %}
+     <p>No weight for this date yet.</p>
+ {% endif %}
+ </div>
+
+ <h4>workout</h4>
+ {% if workout %}
+   {% for workout in workout%}
+     <p>{{workout}}</p>
+   {% endfor %}
+{% else %}
+    <p>No workoutfor in this date yet.</p>
+{% endif %}
+</div>
+
+<div>
+  <h4>Meals</h4>
+   {% if  meals_entries%}
+      {% for meal in  meals_entries%}
+        <p>{{meal}}</p>
+       {% endfor %}
+{% else %}
+    <p>No meals this in date yet.</p>
+{% endif %}
+
+</div>
+<footer>
   <div class="forms">
     <!-- Water Form -->
       <div>
@@ -59,6 +102,26 @@
       </form>
     </div>
   </div>
- 
+</footer>
 
+
+
+<script>
+    const update_date = document.querySelectorAll('input[type="date"]')
+    function convertDate(dateStr) {
+      const date = new Date(dateStr);
+      const formattedDate = date.toISOString().split('T')[0];
+      return formattedDate;
+  }
+
+  const inputDate = "{{current_date}}"
+  const outputDate = convertDate(inputDate)
+  update_date.forEach(input => {
+    input.value = outputDate
+  })
+  
+
+
+ </script>
 {% endblock %}
+

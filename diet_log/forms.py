@@ -49,10 +49,10 @@ class WeightForm(forms.ModelForm):
         self.fields['date'].initial = timezone.now().date()
 
 WORKOUT_CHOICES = [
-        (1, 'pilates'),
-        (2, 'swimming'),
-        (3, 'running'),
-        (4, 'walking')
+        ('pilates','pilates'),
+        ('swimming', 'swimming'),
+        ('running', 'running'),
+        ('walking', 'walking')
     ]
 
 class WorkoutForm(forms.ModelForm):
@@ -61,6 +61,11 @@ class WorkoutForm(forms.ModelForm):
         fields = ['name', 'duration', 'date']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
+            'duration': forms.NumberInput(attrs={
+                'type': 'number',
+                'min': '0',  
+                'step': '1'   
+            }),
             'name': forms.Select(choices=WORKOUT_CHOICES)
         }
     
