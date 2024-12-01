@@ -31,7 +31,13 @@
   <h4>Weight</h4>
   {% if  weight %}
     {% for num in weight %}
-      <p>{{num}}</p>
+    <form method="POST" class="weight-update">
+      <p><span class="wieght_num">{{num}}</span>kg</p>
+      <input type="hidden" name="weight_id" value="{{num.id}}">
+      {% csrf_token %}
+      {{ weight_form.as_p }}
+      <button type="submit" name="update_weight">Updtae</button><button type="submit" name="delete_weight">Delete</button>
+    </form>
     {% endfor %}
  {% else %}
      <p>No weight for this date yet.</p>
@@ -41,7 +47,14 @@
  <h4>workout</h4>
  {% if workout %}
    {% for workout in workout%}
-     <p>{{workout}}</p>
+   <p>{{workout}}</p>
+   <form method="post">
+    <input type="hidden" name="workout_id" value="{{workout.id}}">
+    {% csrf_token %}
+    {{ workout_form.as_p }}
+    <button type="submit" name="update_workout">Updtae</button><button type="submit" name="delete_workout">Delete</button>
+  </form>
+     
    {% endfor %}
 {% else %}
     <p>No workoutfor in this date yet.</p>
@@ -105,7 +118,6 @@
 </footer>
 
 
-
 <script>
     const update_date = document.querySelectorAll('input[type="date"]')
     function convertDate(dateStr) {
@@ -120,8 +132,12 @@
     input.value = outputDate
   })
   
-
-
+  const updateWeight = document.querySelectorAll('.weight-update input[name="amount"]')
+  const weightNum = document.querySelectorAll('.wieght_num')
+  for (let i=0; i < weightNum.length; i++){
+    updateWeight[i].value = weightNum[i].innerText
+  }
+  
  </script>
 {% endblock %}
 

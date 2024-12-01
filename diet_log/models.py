@@ -20,7 +20,7 @@ class Wieght(models.Model):
     date = date = models.DateField()
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.amount} kg"
+        return f"{self.amount}"
     
 class Workout(models.Model):
     id = models.AutoField(primary_key=True)

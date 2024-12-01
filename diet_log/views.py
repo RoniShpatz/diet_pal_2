@@ -12,6 +12,7 @@ from django.contrib import messages
 from .models import Water, Wieght, Workout, Meals
 from django.db.models import Sum
 from django.utils.timezone import timedelta
+from django.shortcuts import get_object_or_404, redirect
 
 
 @login_required
@@ -72,7 +73,22 @@ def index(request):
                 weight_entry.save()
                 messages.success(request, 'Weight entry added successfully!')
                 return redirect('index')
-
+        elif 'update_weight' in request.POST:
+            weight_id = request.POST.get('weight_id')
+            weight_entry = get_object_or_404(Wieght, id=weight_id, user_id=request.user)
+            weight_form = WeightForm(request.POST, instance=weight_entry)
+            if weight_form.is_valid():
+                weight_form.save()
+                messages.success(request, 'Weight entry updated successfully!')
+            else:
+                messages.error(request, 'Failed to update weight entry.')
+        elif 'delete_weight' in request.POST:
+            weight_id = request.POST.get('weight_id')
+            weight_entry = get_object_or_404(Wieght, id=weight_id, user_id=request.user)
+            weight_form = WeightForm(request.POST, instance=weight_entry)
+            if weight_form.is_valid():
+                weight_entry.delete()
+                messages.success(request, 'Weight entry deleted successfully!')
         # Workout Form Handling
         elif 'submit_workout' in request.POST:
             workout_form = WorkoutForm(request.POST)
@@ -83,7 +99,22 @@ def index(request):
                 workout_entry.save()
                 messages.success(request, 'Workout entry added successfully!')
                 return redirect('index')
-
+        elif 'update_workout' in request.POST:
+            workout_id = request.POST.get('workout_id')
+            workout_entry = get_object_or_404(Workout, id=workout_id, user_id=request.user)
+            workout_form = WorkoutForm(request.POST, instance=workout_entry)
+            if workout_form.is_valid():
+                workout_form.save()
+                messages.success(request, 'Workout entry updated successfully!')
+            else:
+                messages.error(request, 'Failed to update workout entry.')
+        elif 'delete_workout' in request.POST:
+            workout_id  = request.POST.get('workout_id')
+            workout_entry = get_object_or_404(Workout, id=workout_id, user_id=request.user)
+            workout_form = WorkoutForm(request.POST, instance=workout_entry)
+            if workout_form.is_valid():
+                workout_entry.delete()
+                messages.success(request, 'Workout entry deleted successfully!')       
         # Meals Form Handling
         elif 'submit_meal' in request.POST:
             meals_form = MealsForm(request.POST)
