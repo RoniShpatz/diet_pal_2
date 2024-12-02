@@ -13,6 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('diet_log/', include('diet_log.urls')),
     path('', RedirectView.as_view(url='diet_log/', permanent=True)),
+    path('dietBlog/', include('dietBlog.urls')),
    
 ]
 

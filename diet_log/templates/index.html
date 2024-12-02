@@ -10,7 +10,7 @@
   </ul>
   {% endif %}
 
-  <h1>{{ user.username }}'s Progress {{ current_date|date:"M. d, Y" }}</h1>
+  <h1>{{ user.username|capfirst }}'s Progress {{ current_date|date:"M. d, Y" }}</h1>
   <div>
     <form method="post">
         {% csrf_token %}
@@ -21,7 +21,17 @@
  <div>
   <h4>Water</h4>
   {% if water_total %}
-  <p>{{water_total}} ml</p>
+  <p id="water-total">{{water_total}} ml</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ water_form.as_p }}
+    <button type="submit" name="submit_water">Add Water</button>
+  </form> 
+  <form method="post" class="water-share">
+    {% csrf_token %}
+    {{ post_form.as_p }}
+    <button type="submit" name="share-water">Share</button>
+  </form>
  {% else %}
      <p>No water for this date yet.</p>
  {% endif %}
@@ -48,13 +58,14 @@
  {% if workout %}
    {% for workout in workout%}
    <p>{{workout}}</p>
-   <form method="post">
+   <form method="post" class="workout-update">
     <input type="hidden" name="workout_id" value="{{workout.id}}">
+    <p class="workout-duration" style="display: none;">{{workout.duration}}</p>
+    <p class="workout-name" style="display: none;">{{workout.name}}</p>
     {% csrf_token %}
     {{ workout_form.as_p }}
     <button type="submit" name="update_workout">Updtae</button><button type="submit" name="delete_workout">Delete</button>
-  </form>
-     
+  </form>     
    {% endfor %}
 {% else %}
     <p>No workoutfor in this date yet.</p>
@@ -66,13 +77,23 @@
    {% if  meals_entries%}
       {% for meal in  meals_entries%}
         <p>{{meal}}</p>
+        <p class="meal-content" style="display: none;">{{meal.content}}</p>
+        <p class="meal-time" style="display: none;">{{meal.time|time:"H:i:s"}}</p>
+        <form method="post" class="meal-update">
+          <input type="hidden" name="meal_id" value="{{meal.id}}">
+          {% csrf_token %}
+          {{ meals_form.as_p }}
+          <button type="submit" name="update_meal">Updtae</button><button type="submit" name="delete_meal">Delete</button>
+        </form>
        {% endfor %}
 {% else %}
     <p>No meals this in date yet.</p>
 {% endif %}
 
 </div>
-<footer>
+
+
+<footer class="add-form">
   <div class="forms">
     <!-- Water Form -->
       <div>
@@ -131,13 +152,47 @@
   update_date.forEach(input => {
     input.value = outputDate
   })
-  
+  // fill the wieght info in the form
   const updateWeight = document.querySelectorAll('.weight-update input[name="amount"]')
   const weightNum = document.querySelectorAll('.wieght_num')
   for (let i=0; i < weightNum.length; i++){
     updateWeight[i].value = weightNum[i].innerText
   }
+// fill the workout info in the form
+  const workoutName = document.querySelectorAll(".workout-name")
+  const workoutDuration= document.querySelectorAll(".workout-duration")
+  const updateWorkout = document.querySelectorAll('.workout-update input[name="duration"]')
+  const updateSelectWorkout = document.querySelectorAll('.workout-update select[name="name"]')
   
+  for (let i=0; i < updateWorkout.length; i ++) {
+    updateWorkout[i].value = workoutDuration[i].innerHTML
+    updateSelectWorkout[i].value = workoutName[i].innerHTML
+  }
+//fill the meals form
+const mealContent = document.querySelectorAll(".meal-content")
+const mealTime = document.querySelectorAll(".meal-time")
+
+const mealContentInput = document.querySelectorAll('.meal-update textarea[name="content"]')
+const mealTimeInput = document.querySelectorAll('.meal-update input[name="time"]')
+
+for (let i=0; i < mealContent.length; i++) {
+  mealContentInput[i].value = mealContent[i].innerHTML
+  mealTimeInput[i].value = mealTime[i].innerHTML 
+}
+
+// share post form
+const titleInputWater = document.querySelector('.water-share input[name="title"]')
+const waterTotal = document.querySelector('#water-total')
+const contentInputWater = document.querySelector('.water-share textarea[name="content"]')
+
+titleInputWater.value = "Water:"
+contentInputWater.value = `I drank ${waterTotal.innerText} today!`
+
+const hidePostWaterShare = document.querySelectorAll('.water-share p')
+hidePostWaterShare.forEach(p => {
+p.style.display = "none"
+})
+
  </script>
 {% endblock %}
 

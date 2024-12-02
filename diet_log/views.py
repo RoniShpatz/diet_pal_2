@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm
+from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -13,6 +13,8 @@ from .models import Water, Wieght, Workout, Meals
 from django.db.models import Sum
 from django.utils.timezone import timedelta
 from django.shortcuts import get_object_or_404, redirect
+from dietBlog.forms import PostForm
+
 
 
 @login_required
@@ -41,6 +43,7 @@ def index(request):
         'weight_form': WeightForm(),
         'workout_form': WorkoutForm(),
         'meals_form': MealsForm(),
+        'post_form': PostForm(),
     }
 
     # Initialize forms for GET requests or invalid POST submissions
@@ -125,7 +128,22 @@ def index(request):
                 meals_entry.save()
                 messages.success(request, 'Meal entry added successfully!')
                 return redirect('index')
-            
+        elif 'update_meal' in request.POST:
+            meal_id = request.POST.get('meal_id')
+            meals_entry =  get_object_or_404(Meals, id=meal_id, user_id=request.user)
+            meals_form = MealsForm(request.POST, instance=meals_entry)
+            if meals_form.is_valid():
+                meals_form.save()
+                messages.success(request, 'Meal entry updated successfully!')
+            else:
+                messages.error(request, 'Failed to update meal entry.') 
+        elif 'delete_meal' in request.POST:
+            meal_id = request.POST.get('meal_id')
+            meals_entry =  get_object_or_404(Meals, id=meal_id, user_id=request.user)
+            meals_form = MealsForm(request.POST, instance=meals_entry)
+            if meals_form.is_valid():
+                meals_entry.delete()
+                messages.success(request, 'Meal entry deleted successfully!')     
         # date display info
         elif 'prev_date' in request.POST:
             current_date -= timedelta(days=1)
@@ -135,6 +153,21 @@ def index(request):
             current_date += timedelta(days=1)
             request.session['current_date'] = current_date.strftime('%Y-%m-%d')
             return redirect('index')
+        elif 'share-water' in request.POST:
+            post_form = PostForm(request.POST)
+            if post_form.is_valid():
+                post_entry = post_form.save(commit=False)
+                post_entry.author_id = request.user.id
+                post_entry.title = post_form.cleaned_data['title']  # Get the title from the form
+                post_entry.content = post_form.cleaned_data['content']
+                post_entry.save()
+                return redirect('dietBlog:post_list')
+            else:
+                messages.error(request, "Failed to share water intake.")
+
+
+
+
     return render(request, 'index.html', context=context)
 
 
@@ -155,3 +188,17 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('profile') 
+    else:
+        form = UserUpdateForm(instance=request.user)
+    
+    return render(request, 'profile.html', {'form': form})
+ 

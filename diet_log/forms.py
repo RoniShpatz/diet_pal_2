@@ -89,3 +89,13 @@ class MealsForm(forms.ModelForm):
         self.fields['time'].initial = timezone.now().time()
         self.fields['content'].help_text = "Maximum 200 characters"
 
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']  
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists() and self.instance.email != email:
+            raise forms.ValidationError("This email is already in use.")
+        return email
