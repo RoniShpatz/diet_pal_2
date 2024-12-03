@@ -153,19 +153,54 @@ def index(request):
             current_date += timedelta(days=1)
             request.session['current_date'] = current_date.strftime('%Y-%m-%d')
             return redirect('index')
+        #share water data in blog
         elif 'share-water' in request.POST:
             post_form = PostForm(request.POST)
             if post_form.is_valid():
                 post_entry = post_form.save(commit=False)
                 post_entry.author_id = request.user.id
-                post_entry.title = post_form.cleaned_data['title']  # Get the title from the form
+                post_entry.title = post_form.cleaned_data['title'] 
                 post_entry.content = post_form.cleaned_data['content']
                 post_entry.save()
                 return redirect('dietBlog:post_list')
             else:
                 messages.error(request, "Failed to share water intake.")
-
-
+        #share weight data in blog
+        elif 'share-weight' in request.POST:
+            post_form = PostForm(request.POST)
+            if post_form.is_valid():
+                post_entry = post_form.save(commit=False)
+                post_entry.author_id = request.user.id
+                post_entry.title = post_form.cleaned_data['title'] 
+                post_entry.content = post_form.cleaned_data['content']
+                post_entry.save()
+                return redirect('dietBlog:post_list')
+            else:
+                messages.error(request, "Failed to share weight intake.")
+        #share workout data in blog
+        elif 'share-workout' in request.POST:
+            post_form = PostForm(request.POST)
+            if post_form.is_valid():
+                post_entry = post_form.save(commit=False)
+                post_entry.author_id = request.user.id
+                post_entry.title = post_form.cleaned_data['title'] 
+                post_entry.content = post_form.cleaned_data['content']
+                post_entry.save()
+                return redirect('dietBlog:post_list')
+            else:
+                messages.error(request, "Failed to share workout intake.")      
+        #share meal data in blog
+        elif 'share-meal' in request.POST:
+            post_form = PostForm(request.POST)
+            if post_form.is_valid():
+                post_entry = post_form.save(commit=False)
+                post_entry.author_id = request.user.id
+                post_entry.title = post_form.cleaned_data['title'] 
+                post_entry.content = post_form.cleaned_data['content']
+                post_entry.save()
+                return redirect('dietBlog:post_list')
+            else:
+                messages.error(request, "Failed to share meal intake.")  
 
 
     return render(request, 'index.html', context=context)

@@ -10,10 +10,31 @@
   {% endif %}
 
 
-    <h1>{{ post.title }}</h1>
-    <p><strong>Author:</strong> {{ post.author }}</p>
-    <p><strong>Created at:</strong> {{ post.created_at }}</p>
-    <p>{{ post.content }}</p>
+    <h1 id="title">{{ post.title }}</h1>
+    <p><strong>Author:</strong> <span >{{ post.author }}</span></p>
+    <p><strong>Created at:</strong><span >{{ post.created_at }}</span> </p>
+    <p id="content">{{ post.content }}</p>
+    <form method="post" class="post-update">
+        <input type="hidden" name="post_id" value="{{post.id}}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="update_post">Updtae</button>
+        <button type="submit" name="delete_post">Delete</button>
+      </form>
     <a href="{% url 'dietBlog:post_list' %}">Back to Posts</a>
 
+
+<script>
+    const postForm = document.querySelector(".post-update")
+    const postTitleInput = document.querySelector('.post-update input[name="title"]')
+    const postContentInput = document.querySelector('.post-update textarea[name="content"]')
+    const postTitle = document.querySelector("#title")
+    const postContent = document.querySelector("#content")
+
+    postContentInput.value = postContent.innerHTML
+    postTitleInput.value = postTitle.innerHTML
+
+
+
+</script>
 {% endblock %}

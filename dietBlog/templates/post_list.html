@@ -14,11 +14,16 @@
     <a href="{% url 'dietBlog:post_create' %}">Create New Post</a>
     <ul>
         {% for post in posts %}
-            <li>
+            <p>
+            {% if post.author == request.user %}
                 <a href="{% url 'dietBlog:post_detail' post.pk %}">{{ post.title }}</a>
+            {% else %}
+                <span>{{ post.title }}</span>
+            {% endif %}
                 <p>{{ post.content }}</p>
                 <p>by {{ post.author }} on {{ post.created_at }}</p>
-            </li>
+            </p>
+
         {% endfor %}
     </ul>
 

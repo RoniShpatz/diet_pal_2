@@ -48,6 +48,11 @@
       {{ weight_form.as_p }}
       <button type="submit" name="update_weight">Updtae</button><button type="submit" name="delete_weight">Delete</button>
     </form>
+    <form method="post" class="share-weight">
+      {% csrf_token %}
+      {{ post_form.as_p }}
+      <button type="submit" name="share-weight">Share</button>
+    </form>
     {% endfor %}
  {% else %}
      <p>No weight for this date yet.</p>
@@ -65,7 +70,13 @@
     {% csrf_token %}
     {{ workout_form.as_p }}
     <button type="submit" name="update_workout">Updtae</button><button type="submit" name="delete_workout">Delete</button>
-  </form>     
+  </form> 
+  <form method="post" class="share-workout">
+    {% csrf_token %}
+    {{ post_form.as_p }}
+    <button type="submit" name="share-workout">Share</button>
+  </form>
+      
    {% endfor %}
 {% else %}
     <p>No workoutfor in this date yet.</p>
@@ -84,6 +95,11 @@
           {% csrf_token %}
           {{ meals_form.as_p }}
           <button type="submit" name="update_meal">Updtae</button><button type="submit" name="delete_meal">Delete</button>
+        </form>
+        <form method="post" class="share-meal">
+          {% csrf_token %}
+          {{ post_form.as_p }}
+          <button type="submit" name="share-meal">Share</button>
         </form>
        {% endfor %}
 {% else %}
@@ -180,12 +196,12 @@ for (let i=0; i < mealContent.length; i++) {
   mealTimeInput[i].value = mealTime[i].innerHTML 
 }
 
-// share post form
+// share post form water
 const titleInputWater = document.querySelector('.water-share input[name="title"]')
 const waterTotal = document.querySelector('#water-total')
 const contentInputWater = document.querySelector('.water-share textarea[name="content"]')
 
-titleInputWater.value = "Water:"
+titleInputWater.value = `Water on the ${inputDate}`
 contentInputWater.value = `I drank ${waterTotal.innerText} today!`
 
 const hidePostWaterShare = document.querySelectorAll('.water-share p')
@@ -193,6 +209,50 @@ hidePostWaterShare.forEach(p => {
 p.style.display = "none"
 })
 
+// share post form weight
+const weightFormPost = document.querySelectorAll(".share-weight p")
+const weightShareTitle = document.querySelectorAll('.share-weight input[name="title"]')
+const weightShareContent = document.querySelectorAll('.share-weight textarea[name="content"]')
+
+weightShareTitle.forEach(title => {
+  title.value = `Weight on the ${inputDate}`
+})
+for (let i=0; i < weightNum.length; i++){
+    weightShareContent[i].value = `I wieght ${weightNum[i].innerText} today!`
+  }
+  weightFormPost.forEach(p => {
+    p.style.display = "none"
+  })
+
+  // share post form workout
+const workoutFormPost = document.querySelectorAll(".share-workout p")
+const workoutShareTitle = document.querySelectorAll('.share-workout input[name="title"]')
+const workoutShareContent = document.querySelectorAll('.share-workout textarea[name="content"]')
+
+workoutShareTitle.forEach(title => {
+  title.value = `Workout on the ${inputDate}`
+})
+for (let i=0; i < weightNum.length; i++){
+  workoutShareContent[i].value = `I wast ${ workoutName[i].innerText} for ${workoutDuration[i].innerHTML} Min.`
+  }
+  workoutFormPost.forEach(p => {
+    p.style.display = "none"
+  })
+  // share post form meal
+
+const mealFormPost = document.querySelectorAll(".share-meal p")
+const mealShareTitle = document.querySelectorAll('.share-meal input[name="title"]')
+const mealShareContent = document.querySelectorAll('.share-meal textarea[name="content"]')
+
+mealShareTitle.forEach(title => {
+  title.value = `Meal on the ${inputDate}`
+})
+for (let i=0; i < mealContent.length; i++){
+  mealShareContent[i].value = `I ate ${ mealContent[i].innerText}.`
+  }
+  mealFormPost.forEach(p => {
+    p.style.display = "none"
+  })
  </script>
 {% endblock %}
 
