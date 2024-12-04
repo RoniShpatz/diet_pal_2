@@ -99,3 +99,16 @@ class UserUpdateForm(forms.ModelForm):
         if User.objects.filter(email=email).exists() and self.instance.email != email:
             raise forms.ValidationError("This email is already in use.")
         return email
+    
+
+class FavMealsForm(forms.ModelForm):
+    class Meta:
+        model = FavMeals
+        fields = ['name', 'content']
+        widgets = {
+            'name': forms.TextInput(attrs={'max_length': 20}),
+            'content': forms.Textarea(attrs={'rows': 3, 'max_length': 200})
+        }
+    
+
+

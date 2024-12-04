@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm
+from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm, FavMealsForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -9,7 +9,7 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from .forms import SignUpForm
 from django.contrib import messages
-from .models import Water, Wieght, Workout, Meals
+from .models import Water, Wieght, Workout, Meals, FavMeals
 from django.db.models import Sum
 from django.utils.timezone import timedelta
 from django.shortcuts import get_object_or_404, redirect
@@ -29,7 +29,9 @@ def index(request):
 
     weight =  Wieght.objects.filter(user_id=request.user, date=current_date)
     workout = Workout.objects.filter(user_id=request.user, date=current_date)
-    
+
+    fav_meal_list =FavMeals.objects.filter(user_id=request.user).order_by('name')
+
 
     meals_entries = Meals.objects.filter(user_id=request.user, date=current_date).order_by('time')
 
@@ -44,6 +46,7 @@ def index(request):
         'workout_form': WorkoutForm(),
         'meals_form': MealsForm(),
         'post_form': PostForm(),
+        'fav_meal': fav_meal_list,
     }
 
     # Initialize forms for GET requests or invalid POST submissions
@@ -202,7 +205,6 @@ def index(request):
             else:
                 messages.error(request, "Failed to share meal intake.")  
 
-
     return render(request, 'index.html', context=context)
 
 
@@ -236,4 +238,49 @@ def profile(request):
         form = UserUpdateForm(instance=request.user)
     
     return render(request, 'profile.html', {'form': form})
- 
+
+
+@login_required
+def fav_meal(request):
+    fav_meal_list = FavMeals.objects.filter(user_id=request.user).order_by('name')
+    fav_meal_form = FavMealsForm()
+    
+    if request.method == 'POST':
+        if 'submit-fav-meal' in request.POST:
+            fav_meal_form = FavMealsForm(request.POST)
+            if fav_meal_form.is_valid():
+                fav_entry = fav_meal_form.save(commit=False)
+                fav_entry.user_id = request.user
+                fav_entry.save()
+                messages.success(request, 'Fav meal entry added successfully!')
+                return redirect('fav_meal')
+            else:
+                print("Fav Meal Form Errors:", fav_meal_form.errors)
+        elif 'updtae-fav-meal' in request.POST:
+            fav_meal_id = request.POST.get('fav_meal_id')
+            fav_entry = get_object_or_404(FavMeals, id=fav_meal_id, user_id=request.user)
+            fav_meal_form = FavMealsForm(request.POST, instance=fav_entry)
+            if fav_meal_form.is_valid():
+                fav_meal_form.save()
+                messages.success(request, 'Fav Meal entry updated successfully!')
+                return redirect('fav_meal')
+            else:
+                messages.error(request, 'Failed to update fav meal entry.') 
+        elif 'delete-fav-meal' in request.POST:
+            fav_meal_id = request.POST.get('fav_meal_id')
+            fav_entry = get_object_or_404(FavMeals, id=fav_meal_id, user_id=request.user)
+            fav_meal_form = FavMealsForm(request.POST, instance=fav_entry)
+            if fav_meal_form.is_valid():
+                fav_entry.delete()
+                messages.success(request, 'Fav Meal entry deleted successfully!')
+                return redirect('fav_meal')
+            else:
+                messages.error(request, 'Failed to delete fav meal entry.') 
+    return render(request, 'fav_meal.html', {
+        'fav_meal': fav_meal_list, 
+        'fav_meal_form': fav_meal_form
+    })
+
+
+
+

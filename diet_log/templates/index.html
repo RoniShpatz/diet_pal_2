@@ -146,6 +146,15 @@
     <div>
       <h5>Add Meal</h5>
       <form method="post">
+        <select name="fav-meal" class="fav-meal">
+          {% if fav_meal %}
+              {% for meal in fav_meal %}
+                  <option value="{{meal.name}}">{{meal.name}}</option>
+              {% endfor %}
+          {% else %}
+              <option>No favorite meals yet.</option>
+          {% endif %}
+      </select>
         {% csrf_token %}
         {{ meals_form.as_p }}
         <button type="submit" name="submit_meal">Add Meal</button>

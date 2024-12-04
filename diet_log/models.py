@@ -47,5 +47,7 @@ class FavMeals(models.Model):
     name = models.CharField(max_length=20) 
     content = models.CharField(max_length=200)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    
     def __str__(self):
         return f"{self.content} for user {self.user_id}" 
+    

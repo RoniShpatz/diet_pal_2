@@ -23,18 +23,19 @@
         <div class="col-sm-2">
           {% block sidebar %}
             <ul class="sidebar-nav">
-              <li><a href="{% url 'index' %}">Home</a></li>
+              <li><a href="{% url 'index' %}">Diet Log</a></li>
+              <li><a href="{% url 'fav_meal' %}">Fav Meal</a></li>
               <li><a href="{% url 'dietBlog:post_list' %}">Diet Blog</a></li>
               <li><a href="{% url 'profile' %}">Profile</a></li>
               {% if user.is_authenticated %}
-              <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onclick="document.getElementById('logout-form').submit()">
+              <button  onclick="document.getElementById('logout-form').submit()">
                   Logout
               </button>
               <form id="logout-form" method="POST" action="{% url 'logout' %}" class="hidden">
                   {% csrf_token %}
               </form>
           {% else %}
-              <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              <button >
                   Login
               </button>
           {% endif %}
