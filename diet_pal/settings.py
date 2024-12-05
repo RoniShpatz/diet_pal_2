@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'crispy_bootstrap4',
     'crispy_bootstrap5',
     'dietBlog',
+    'cloudinary',
+    'cloudinary_storage',
+    'uploader',
+
 ]
 
 MIDDLEWARE = [
@@ -149,3 +153,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER'] # Login email address, Stored as an environment varaible
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dv8uqmrry',
+    'API_KEY': os.environ['API_KEY'],
+    'API_SECRET': os.environ['API_SECRET'],
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

@@ -2,22 +2,46 @@
 
 {% block content %}
 
-  {% if messages %}
-  <ul class="messages">
-      {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-      {% endfor %}
-  </ul>
-  {% endif %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 <h1>{{user.username|capfirst}} Profile</h1>
     
+{% if files %}
+    <h3>Your Uploaded Files:</h3>
+    {% for file in files %}
+        <img src="{{ file.file.url }}" alt="Uploaded file">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="photo-id"  value="{{file.id}}">
+            <input type="file" name="file" accept="image/*">
+            <button type="submit" name="update-profile-photo">Update</button>
+            <button type="submit" name="dalete-profile-photo">Delete</button>
+        </form>
+    {% endfor %}
+{% endif %}
+
     <p><strong>Username:</strong> {{ user.username|capfirst }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-primary" name="update-profile">Save Changes</button>
     </form>
-
+    {% if files %}
+     <h4>You have a profile photo</h4>
+    {% else %}
+    <h4>Upload profile photo</h4>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" accept="image/*">
+        <button type="submit" name="uploade-profile-photo">Upload Photo</button>
+    </form>
+    {% endif %}
   {% endblock %}

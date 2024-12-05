@@ -22,6 +22,11 @@
       <div class="row">
         <div class="col-sm-2">
           {% block sidebar %}
+          {% if files %}
+              {% for file in files %}
+                  <img src="{{ file.file.url }}" alt="Uploaded file" style="max-width: 100px; border-radius: 50%;">
+              {% endfor %}
+          {% endif %}
             <ul class="sidebar-nav">
               <li><a href="{% url 'index' %}">Diet Log</a></li>
               <li><a href="{% url 'fav_meal' %}">Fav Meal</a></li>

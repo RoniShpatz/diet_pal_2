@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm, FavMealsForm
+from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm, FavMealsForm, UploadForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -9,7 +9,7 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from .forms import SignUpForm
 from django.contrib import messages
-from .models import Water, Wieght, Workout, Meals, FavMeals
+from .models import Water, Wieght, Workout, Meals, FavMeals, UploadedFile
 from django.db.models import Sum
 from django.utils.timezone import timedelta
 from django.shortcuts import get_object_or_404, redirect
@@ -23,6 +23,7 @@ def index(request):
         request.session['current_date'] = timezone.now().date().strftime('%Y-%m-%d')
     current_date = timezone.datetime.strptime(request.session['current_date'], '%Y-%m-%d').date()
 
+    files = UploadedFile.objects.filter(user_id=request.user)
     # Fetch existing data for the logged-in user
     water_entries = Water.objects.filter(user_id=request.user, date=current_date)
     total_water = water_entries.aggregate(Sum('mil'))['mil__sum'] or 0
@@ -47,6 +48,7 @@ def index(request):
         'meals_form': MealsForm(),
         'post_form': PostForm(),
         'fav_meal': fav_meal_list,
+        'files': files,
     }
 
     # Initialize forms for GET requests or invalid POST submissions
@@ -146,7 +148,7 @@ def index(request):
             meals_form = MealsForm(request.POST, instance=meals_entry)
             if meals_form.is_valid():
                 meals_entry.delete()
-                messages.success(request, 'Meal entry deleted successfully!')     
+                messages.success(request, 'Meal entry deleted successfully!')
         # date display info
         elif 'prev_date' in request.POST:
             current_date -= timedelta(days=1)
@@ -228,23 +230,76 @@ def signup(request):
 
 @login_required
 def profile(request):
+    form = UserUpdateForm(instance=request.user)
+    profile_photo_form = UploadForm()
+
     if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('profile') 
+        if 'uploade-profile-photo' in request.POST:
+            profile_photo_form = UploadForm(request.POST, request.FILES)
+            
+            if profile_photo_form.is_valid():
+                try:
+                    uploaded_file = profile_photo_form.save(commit=False)
+                    uploaded_file.user_id = request.user
+                    uploaded_file.save()
+                    messages.success(request, 'Profile photo uploaded successfully!')
+                except Exception as e:
+                    messages.error(request, f'Upload failed: {str(e)}')
+                    # Log the full error for debugging
+                    import logging
+                    logging.error(f"File upload error: {e}")
+            else:
+                # Log form errors
+                messages.error(request, 'Form is invalid')
+                for field, errors in profile_photo_form.errors.items():
+                    messages.error(request, f"{field}: {errors}")
+        elif 'update-profile' in request.POST:
+            form = UserUpdateForm(request.POST, instance=request.user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your profile has been updated successfully!')
+                return redirect('profile')
+        elif 'update-profile-photo' in request.POST:
+            photo_id = request.POST.get("photo-id")
+            current_photo = get_object_or_404(UploadedFile, id=photo_id)
+            profile_photo_form = UploadForm(request.POST, request.FILES, instance=current_photo)
+            if profile_photo_form.is_valid():
+                profile_photo_form.save()
+                messages.success(request, 'Profile photo updated successfully!')
+            else:
+                messages.error(request, 'Failed to update profile photo.')
+                for field, errors in profile_photo_form.errors.items():
+                    messages.error(request, f"{field}: {errors}")
+
+        elif 'dalete-profile-photo' in request.POST:
+            photo_id = request.POST.get("photo-id")
+            try:
+                current_photo = get_object_or_404(UploadedFile, id=photo_id)
+                current_photo.delete()
+                messages.success(request, 'Profile photo deleted successfully!')
+            except Exception as e:
+                messages.error(request, f'Failed to delete profile photo: {str(e)}')
+
     else:
         form = UserUpdateForm(instance=request.user)
+        profile_photo_form = UploadForm()
+
+
+
+    files = UploadedFile.objects.filter(user_id=request.user)
     
-    return render(request, 'profile.html', {'form': form})
+    return render(request, 'profile.html', {
+        'form': form, 
+        'profile_photo_form': profile_photo_form, 
+        'files': files
+    })
 
 
 @login_required
 def fav_meal(request):
     fav_meal_list = FavMeals.objects.filter(user_id=request.user).order_by('name')
     fav_meal_form = FavMealsForm()
-    
+    files = UploadedFile.objects.filter(user_id=request.user)
     if request.method == 'POST':
         if 'submit-fav-meal' in request.POST:
             fav_meal_form = FavMealsForm(request.POST)
@@ -278,7 +333,8 @@ def fav_meal(request):
                 messages.error(request, 'Failed to delete fav meal entry.') 
     return render(request, 'fav_meal.html', {
         'fav_meal': fav_meal_list, 
-        'fav_meal_form': fav_meal_form
+        'fav_meal_form': fav_meal_form,
+        'files': files
     })
 
 

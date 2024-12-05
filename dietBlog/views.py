@@ -4,14 +4,17 @@ from .models import Post
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from diet_log.models import UploadedFile
 
 @login_required
 def post_list(request):
+    files = UploadedFile.objects.filter(user_id=request.user)
     posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'post_list.html', {'posts': posts})
+    return render(request, 'post_list.html', {'posts': posts, "files": files})
 
 @login_required
 def post_create(request):
+    files = UploadedFile.objects.filter(user_id=request.user)
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
@@ -21,10 +24,11 @@ def post_create(request):
             return redirect('post_list')  # Redirect to the list of posts
     else:
         form = PostForm()
-    return render(request, 'post_create.html', {'form': form})
+    return render(request, 'post_create.html', {'form': form, "files": files})
 
 @login_required
 def post_detail(request, pk):
+    files = UploadedFile.objects.filter(user_id=request.user)
     post = get_object_or_404(Post, pk=pk)
     if request.method == 'POST':
         if 'update_post' in request.POST:
@@ -47,4 +51,4 @@ def post_detail(request, pk):
                 return redirect ('dietBlog:post_list')
     else:
         form = PostForm()
-    return render(request, 'post_detail.html', {'post': post, 'form': form})
+    return render(request, 'post_detail.html', {'post': post, 'form': form, "files": files})
