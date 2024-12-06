@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm, FavMealsForm, UploadForm
+from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm, FavMealsForm, UploadForm, UploadFormMeal
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -14,6 +14,7 @@ from django.db.models import Sum
 from django.utils.timezone import timedelta
 from django.shortcuts import get_object_or_404, redirect
 from dietBlog.forms import PostForm
+from .utils import crop_and_resize_image
 
 
 
@@ -125,23 +126,41 @@ def index(request):
                 messages.success(request, 'Workout entry deleted successfully!')       
         # Meals Form Handling
         elif 'submit_meal' in request.POST:
-            meals_form = MealsForm(request.POST)
+            meals_form = MealsForm(request.POST, request.FILES)
             if meals_form.is_valid():
                 meals_entry = meals_form.save(commit=False)
                 meals_entry.user_id = request.user
-                meals_entry.date = meals_form.cleaned_data['date']
+                
+                # Process the uploaded image
+                if 'file' in request.FILES:
+                    processed_image = crop_and_resize_image(request.FILES['file'])
+                    meals_entry.file.save(
+                        f"meal_{request.user.id}_{timezone.now().strftime('%Y%m%d_%H%M%S')}.jpg", 
+                        processed_image
+                    )
+                
                 meals_entry.save()
                 messages.success(request, 'Meal entry added successfully!')
                 return redirect('index')
         elif 'update_meal' in request.POST:
             meal_id = request.POST.get('meal_id')
-            meals_entry =  get_object_or_404(Meals, id=meal_id, user_id=request.user)
-            meals_form = MealsForm(request.POST, instance=meals_entry)
+            meals_entry = get_object_or_404(Meals, id=meal_id, user_id=request.user)
+            # print("POST Data:", request.POST)
+            # print("FILES Data:", request.FILES)
+            # Check if a new file is uploaded
+            if 'file' in request.FILES:
+                processed_image = crop_and_resize_image(request.FILES['file'])
+                if meals_entry.file:
+                    meals_entry.file.delete()
+                meals_entry.file.save(
+                    f"meal_{request.user.id}_{timezone.now().strftime('%Y%m%d_%H%M%S')}.jpg",
+                    processed_image)
+            meals_form = MealsForm(request.POST, request.FILES, instance=meals_entry)
+            
             if meals_form.is_valid():
                 meals_form.save()
                 messages.success(request, 'Meal entry updated successfully!')
-            else:
-                messages.error(request, 'Failed to update meal entry.') 
+                return redirect('index')
         elif 'delete_meal' in request.POST:
             meal_id = request.POST.get('meal_id')
             meals_entry =  get_object_or_404(Meals, id=meal_id, user_id=request.user)
@@ -205,7 +224,7 @@ def index(request):
                 post_entry.save()
                 return redirect('dietBlog:post_list')
             else:
-                messages.error(request, "Failed to share meal intake.")  
+                messages.error(request, "Failed to share meal intake.")
 
     return render(request, 'index.html', context=context)
 

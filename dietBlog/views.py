@@ -8,9 +8,11 @@ from diet_log.models import UploadedFile
 
 @login_required
 def post_list(request):
+    files_all = UploadedFile.objects.all()
     files = UploadedFile.objects.filter(user_id=request.user)
+    
     posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'post_list.html', {'posts': posts, "files": files})
+    return render(request, 'post_list.html', {'posts': posts, "files": files, 'all_files': files_all})
 
 @login_required
 def post_create(request):
@@ -29,6 +31,8 @@ def post_create(request):
 @login_required
 def post_detail(request, pk):
     files = UploadedFile.objects.filter(user_id=request.user)
+    
+    
     post = get_object_or_404(Post, pk=pk)
     if request.method == 'POST':
         if 'update_post' in request.POST:
@@ -51,4 +55,4 @@ def post_detail(request, pk):
                 return redirect ('dietBlog:post_list')
     else:
         form = PostForm()
-    return render(request, 'post_detail.html', {'post': post, 'form': form, "files": files})
+    return render(request, 'post_detail.html', {'post': post, 'form': form, "files": files, })

@@ -40,9 +40,12 @@ class Meals(models.Model):
     content = models.CharField(max_length=200)
     date = models.DateField()
     time = models.TimeField()
+    file = models.ImageField(storage=MediaCloudinaryStorage(), null=True, blank=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+
     def __str__(self):
-        return f"{self.time.strftime('%H:%M')} : {self.content}"
+        # Return a meaningful string representation of the model
+        return f"{self.time.strftime('%H:%M')} : {self.content} (File: {self.file.name or 'Unnamed file'})"
     
 class FavMeals(models.Model):
     id = models.AutoField(primary_key=True)
@@ -66,18 +69,6 @@ class UploadedFile(models.Model):
 
     def __str__(self):
         return self.file.name or 'Unnamed file'
-    
+        
 
 
-class UploadedFileMel(models.Model):
-    id = models.AutoField(primary_key=True)
-    file = models.ImageField(storage=MediaCloudinaryStorage())
-    date = models.DateField()
-    user_id = models.ForeignKey(
-    User, on_delete=models.CASCADE, 
-    null=True,  
-    blank=True  
-)
-
-    def __str__(self):
-        return self.file.name or 'Unnamed file'

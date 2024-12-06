@@ -79,17 +79,19 @@ class WorkoutForm(forms.ModelForm):
 class MealsForm(forms.ModelForm):
     class Meta:
         model = Meals  # Assuming you have a Meals model
-        fields = ['content', 'date', 'time']
+        fields = ['content', 'date', 'time', 'file']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'time': forms.TimeInput(attrs={'type': 'time'}),
-            'content': forms.Textarea(attrs={'rows': 3, 'max_length': 200})
+            'content': forms.Textarea(attrs={'rows': 3, 'max_length': 200}),
+            'file': forms.FileInput(attrs={'accept': 'image/*'}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date'].initial = timezone.now().date()
-        self.fields['time'].initial = timezone.now().time()
+        current_time = timezone.now().time().strftime('%H:%M')
+        self.fields['time'].initial = current_time
         self.fields['content'].help_text = "Maximum 200 characters"
 
 
@@ -180,6 +182,68 @@ class UploadForm(forms.ModelForm):
             buffer,
             None,
             f'{uploaded_file.name.split(".")[0]}_circular.png',
+            'image/png',
+            buffer.getbuffer().nbytes,
+            None
+        )
+
+
+class UploadFormMeal(forms.ModelForm):
+    file = forms.ImageField(
+        required=True,
+        widget=forms.FileInput(attrs={'accept': 'image/*'})
+    )
+
+    class Meta:
+        model = UploadedFile
+        fields = ['file']
+
+    def clean_file(self):
+        # Add extra validation
+        file = self.cleaned_data.get('file')
+        
+        if not file:
+            raise forms.ValidationError("No file was uploaded.")
+        
+        # Check file size
+        if file.size > 5 * 1024 * 1024:  # 5MB limit
+            raise forms.ValidationError("File size must be under 5MB.")
+        
+        return file
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        uploaded_file = self.cleaned_data.get('file')
+        processed_file = self.resize_image(uploaded_file)  # Resize the image
+        
+        instance.file = processed_file
+
+        if commit:
+            instance.save()
+        
+        return instance
+
+    # Resize the image to exactly 200x200 pixels
+    def resize_image(self, uploaded_file, target_size=(200, 200)):
+        img = Image.open(uploaded_file)
+        
+        if img.mode != 'RGB':
+            img = img.convert('RGB')  # Ensure the image is in RGB mode
+
+        # Resize the image to the target size
+        img = img.resize(target_size, Image.ANTIALIAS)
+
+        # Save to a bytes buffer
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+        buffer.seek(0)
+
+        # Convert to Django InMemoryUploadedFile
+        return InMemoryUploadedFile(
+            buffer,
+            None,
+            f'{uploaded_file.name.split(".")[0]}_resized.png',
             'image/png',
             buffer.getbuffer().nbytes,
             None

@@ -9,22 +9,27 @@
   </ul>
   {% endif %}
 
-
-    <h1>Blog Posts</h1>
-    <a href="{% url 'dietBlog:post_create' %}">Create New Post</a>
-    <ul>
-        {% for post in posts %}
-            <div>
-            {% if post.author == request.user %}
-            <h4> <a href="{% url 'dietBlog:post_detail' post.pk %}">{{ post.title }}</a></h4>
-            {% else %}
-                <h4><span>{{ post.title }}</span></h4>
+  <h1>Blog Posts</h1>
+  <a href="{% url 'dietBlog:post_create' %}">Create New Post</a>
+  <ul>
+    {% for post in posts%}
+        {% for file in all_files %}
+       
+            {% if file.user_id.id == post.author.id %}
+            <img src="{{ file.file.url }}" alt="Uploaded file" style="max-width: 60px; border-radius: 50%;">
             {% endif %}
-                <p>{{ post.content }}</p>
-                <p>by {{ post.author }} on {{ post.created_at }}</p>
-            </div>
-
         {% endfor %}
-    </ul>
+          <div>
+              {% if post.author == request.user %}
+                  <h4><a href="{% url 'dietBlog:post_detail' post.pk %}">{{ post.title }}</a></h4>
+              {% else %}
+                  <h4><span>{{ post.title }}</span></h4>
+              {% endif %}
+              <p>{{ post.content }}</p>
+              <p>by {{ post.author }} on {{ post.created_at }}</p>
+          </div>
+       
+      {% endfor %}
+  </ul>
 
-{% endblock %}s
+{% endblock %}

@@ -87,11 +87,13 @@
   <h4>Meals</h4>
    {% if  meals_entries%}
       {% for meal in  meals_entries%}
-        <p>{{meal}}</p>
+        <p>{{meal.time}} : {{meal.content}}</p>
+        <img src="{{meal.file.url}}" >
         <p class="meal-content" style="display: none;">{{meal.content}}</p>
         <p class="meal-time" style="display: none;">{{meal.time|time:"H:i:s"}}</p>
-        <form method="post" class="meal-update">
+        <form method="post" class="meal-update" enctype="multipart/form-data">
           <input type="hidden" name="meal_id" value="{{meal.id}}">
+          
           {% csrf_token %}
           {{ meals_form.as_p }}
           <button type="submit" name="update_meal">Updtae</button><button type="submit" name="delete_meal">Delete</button>
@@ -145,8 +147,8 @@
     <!-- Miles Form -->
     <div>
       <h5>Add Meal</h5>
-      <form method="post">
-        <select name="fav-meal" class="fav-meal">
+      <form method="post" enctype="multipart/form-data">
+        <select name="fav-meal" class="fav-meal" >
           {% if fav_meal %}
               {% for meal in fav_meal %}
                   <option value="{{meal.name}}">{{meal.name}}</option>
@@ -157,6 +159,7 @@
       </select>
         {% csrf_token %}
         {{ meals_form.as_p }}
+        <!-- <input type="file" name="file" accept="image/*"> -->
         <button type="submit" name="submit_meal">Add Meal</button>
       </form>
     </div>
@@ -241,12 +244,15 @@ const workoutShareContent = document.querySelectorAll('.share-workout textarea[n
 workoutShareTitle.forEach(title => {
   title.value = `Workout on the ${inputDate}`
 })
-for (let i=0; i < weightNum.length; i++){
+if (workoutName.length >0) {
+  for (let i=0; i < weightNum.length; i++){
   workoutShareContent[i].value = `I wast ${ workoutName[i].innerText} for ${workoutDuration[i].innerHTML} Min.`
   }
   workoutFormPost.forEach(p => {
     p.style.display = "none"
   })
+}
+
   // share post form meal
 
 const mealFormPost = document.querySelectorAll(".share-meal p")
