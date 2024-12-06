@@ -1,6 +1,9 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from django.urls import reverse
+
+
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -9,6 +12,9 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('profile/', views.profile, name='profile'),
     path('fav-meal/', views.fav_meal, name='fav_meal'),
-
+    path('inbox/', views.inbox, name='inbox'),
+    path('send/', views.send_message, name='send_message'),
+    path('inbox/', views.inbox, name='inbox'),
+    path('message/<int:message_id>/', views.message_detail, name='message_detail'),
    
 ]

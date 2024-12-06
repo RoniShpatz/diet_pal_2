@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm, FavMealsForm, UploadForm, UploadFormMeal
+from diet_log.forms import WaterForm, WeightForm, WorkoutForm, MealsForm, LoginForm, UserUpdateForm, FavMealsForm, UploadForm, UploadFormMeal, MessageForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -9,12 +9,15 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from .forms import SignUpForm
 from django.contrib import messages
-from .models import Water, Wieght, Workout, Meals, FavMeals, UploadedFile
+from .models import Water, Wieght, Workout, Meals, FavMeals, UploadedFile, Message
 from django.db.models import Sum
 from django.utils.timezone import timedelta
 from django.shortcuts import get_object_or_404, redirect
 from dietBlog.forms import PostForm
 from .utils import crop_and_resize_image
+from django.contrib.auth.models import User
+
+
 
 
 
@@ -359,6 +362,39 @@ def fav_meal(request):
         'files': files
     })
 
+@login_required
+def inbox(request):
+    messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
+
+    return render(request, 'inbox.html', {'massages': messages})
 
 
+@login_required
+def send_message(request):
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user
+            message.save()
+            return redirect('inbox')
+    else:
+        form = MessageForm()
+    return render(request, 'send_message.html', {'form': form})
 
+@login_required
+def inbox(request):
+    received_messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
+    sent_messages = Message.objects.filter(sender=request.user).order_by('-timestamp')
+    return render(request, 'inbox.html', {
+        'received_messages': received_messages,
+        'sent_messages': sent_messages
+    })
+
+@login_required
+def message_detail(request, message_id):
+    message = Message.objects.get(id=message_id)
+    if message.recipient == request.user:
+        message.is_read = True
+        message.save()
+    return render(request, 'message_detail.html', {'message': message})

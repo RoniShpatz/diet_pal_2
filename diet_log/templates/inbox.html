@@ -1,0 +1,41 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h2>Your Inbox</h2>
+
+    <h3>Received Messages</h3>
+    {% for message in received_messages %}
+        <div>
+            From: {{ message.sender.username }}
+            <a href="{% url 'message_detail' message.id %}">
+                {{ message.content|truncatewords:10 }}
+            </a>
+            {% if not message.is_read %}
+                <span>New!</span>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No received messages.</p>
+    {% endfor %}
+
+    <h3>Sent Messages</h3>
+    {% for message in sent_messages %}
+        <div>
+            To: {{ message.recipient.username }}
+            <a href="{% url 'message_detail' message.id %}">
+                {{ message.content|truncatewords:10 }}
+            </a>
+        </div>
+    {% empty %}
+        <p>No sent messages.</p>
+        <a href="{% url 'send_message' %}">Send a New Message</a>
+    {% endfor %}
+{% endblock %}

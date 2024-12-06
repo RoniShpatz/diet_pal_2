@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Submit
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Meals, Water, Wieght, Workout, FavMeals, UploadedFile
+from .models import Meals, Water, Wieght, Workout, FavMeals, UploadedFile, Message
 from PIL import Image, ImageDraw
 import io
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -248,3 +248,8 @@ class UploadFormMeal(forms.ModelForm):
             buffer.getbuffer().nbytes,
             None
         )
+    
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['recipient', 'content']

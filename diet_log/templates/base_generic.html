@@ -32,6 +32,7 @@
               <li><a href="{% url 'fav_meal' %}">Fav Meal</a></li>
               <li><a href="{% url 'dietBlog:post_list' %}">Diet Blog</a></li>
               <li><a href="{% url 'profile' %}">Profile</a></li>
+              <li><a href="{% url 'inbox' %}">Inbox</a></li>
               {% if user.is_authenticated %}
               <button  onclick="document.getElementById('logout-form').submit()">
                   Logout
