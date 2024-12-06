@@ -101,6 +101,7 @@
         <form method="post" class="share-meal">
           {% csrf_token %}
           {{ post_form.as_p }}
+          <input value="{{meal.id}}" name="meal_id">
           <button type="submit" name="share-meal">Share</button>
         </form>
        {% endfor %}

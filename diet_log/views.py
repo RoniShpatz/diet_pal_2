@@ -221,6 +221,9 @@ def index(request):
                 post_entry.author_id = request.user.id
                 post_entry.title = post_form.cleaned_data['title'] 
                 post_entry.content = post_form.cleaned_data['content']
+                meal_id = request.POST.get('meal_id')
+                if meal_id:
+                    post_entry.meal = Meals.objects.get(id=int(meal_id))
                 post_entry.save()
                 return redirect('dietBlog:post_list')
             else:

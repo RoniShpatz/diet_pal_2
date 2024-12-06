@@ -4,15 +4,20 @@ from .models import Post
 from .forms import PostForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from diet_log.models import UploadedFile
+from diet_log.models import UploadedFile, Meals
+
 
 @login_required
 def post_list(request):
     files_all = UploadedFile.objects.all()
+    files_with_meal = Meals.objects.filter()
+    posts = Post.objects.all().order_by('-created_at')
+    meal_ids = posts.values_list('meal_id', flat=True)
+    files_with_meal = Meals.objects.filter(id__in=meal_ids)
     files = UploadedFile.objects.filter(user_id=request.user)
     
-    posts = Post.objects.all().order_by('-created_at')
-    return render(request, 'post_list.html', {'posts': posts, "files": files, 'all_files': files_all})
+    return render(request, 'post_list.html', {'posts': posts, 
+        "files": files, 'all_files': files_all, 'files_with_meal':files_with_meal})
 
 @login_required
 def post_create(request):
