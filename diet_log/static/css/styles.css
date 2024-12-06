@@ -4,3 +4,8 @@
     list-style: none;
   }
   
+.index-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

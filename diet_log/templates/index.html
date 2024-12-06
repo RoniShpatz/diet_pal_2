@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-
+{% load static %}
   {% if messages %}
   <ul class="messages">
       {% for message in messages %}
@@ -9,266 +9,304 @@
       {% endfor %}
   </ul>
   {% endif %}
+<div class="index">
+  <div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="display-6">
+                    {{ user.username|capfirst }}'s Progress 
+                    <small class="text-muted">{{ current_date|date:"M. d, Y" }}</small>
+                </h1>
+                <div>
+                    <form method="post" class="d-flex">
+                        {% csrf_token %}
+                        <button type="submit" name="prev_date" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left"><</i>
+                        </button>
+                        <button type="submit" name="next_date" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-right">></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <h1>{{ user.username|capfirst }}'s Progress {{ current_date|date:"M. d, Y" }}</h1>
-  <div>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" name="prev_date"><</button>
-        <button type="submit" name="next_date">></button>
-    </form>
+    <div class="row g-4 mb-4">
+        <!-- Water Section -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Water</h4>
+                </div>
+                <div class="card-body">
+                    {% if water_total %}
+                        <div class="text-center mb-3">
+                            <h5 id="water-total" class="display-6 text-primary">
+                                {{water_total}} ml
+                            </h5>
+                        </div>
+                        <form method="post" class="mb-3">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ water_form.as_p }}
+                            </div>
+                            <button type="submit" name="submit_water" class="btn btn-primary w-100">
+                                Add Water
+                            </button>
+                        </form>
+                        <form method="post" class="water-share">
+                            {% csrf_token %}
+                            {{ post_form.as_p }}
+                            <button type="submit" name="share-water" class="btn btn-outline-primary w-100">
+                                Share
+                            </button>
+                        </form>
+                    {% else %}
+                        <p class="text-muted text-center">No water for this date yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight Section -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h4 class="card-title mb-0">Weight</h4>
+                </div>
+                <div class="card-body">
+                    {% if weight %}
+                        {% for num in weight %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h5 class="mb-0">
+                                            <span class="weight_num">{{num}}</span> kg
+                                        </h5>
+                                    </div>
+                                    <form method="POST" class="weight-update">
+                                        <input type="hidden" name="weight_id" value="{{num.id}}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            {{ weight_form.as_p }}
+                                        </div>
+                                        <div class="d-flex">
+                                            <button type="submit" name="update_weight" class="btn btn-success me-2">
+                                                Update
+                                            </button>
+                                            <button type="submit" name="delete_weight" class="btn btn-danger">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <form method="post" class="share-weight mb-3">
+                                {% csrf_token %}
+                                {{ post_form.as_p }}
+                                <button type="submit" name="share-weight" class="btn btn-outline-success w-100">
+                                    Share
+                                </button>
+                            </form>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">No weight for this date yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Section -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h4 class="card-title mb-0">Workout</h4>
+                </div>
+                <div class="card-body">
+                    {% if workout %}
+                        {% for workout in workout %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{workout}}</h5>
+                                    <form method="post" class="workout-update">
+                                        <input type="hidden" name="workout_id" value="{{workout.id}}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            {{ workout_form.as_p }}
+                                        </div>
+                                        <div class="d-flex">
+                                            <button type="submit" name="update_workout" class="btn btn-info me-2">
+                                                Update
+                                            </button>
+                                            <button type="submit" name="delete_workout" class="btn btn-danger">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <form method="post" class="share-workout mb-3">
+                                {% csrf_token %}
+                                {{ post_form.as_p }}
+                                <button type="submit" name="share-workout" class="btn btn-outline-info w-100">
+                                    Share
+                                </button>
+                            </form>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">No workout for this date yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meals Section - Full Width -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="card-title mb-0">Meals</h4>
+                </div>
+                <div class="card-body">
+                    {% if meals_entries %}
+                        <div class="row">
+                            {% for meal in meals_entries %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{meal.time}} : {{meal.content}}</h5>
+                                            {% if meal.file %}
+                                                <img src="{{meal.file.url}}" class="img-fluid rounded mb-3">
+                                            {% endif %}
+                                            <form method="post" class="meal-update" enctype="multipart/form-data">
+                                                <input type="hidden" name="meal_id" value="{{meal.id}}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    {{ meals_form.as_p }}
+                                                </div>
+                                                <div class="d-flex">
+                                                    <button type="submit" name="update_meal" class="btn btn-warning me-2">
+                                                        Update
+                                                    </button>
+                                                    <button type="submit" name="delete_meal" class="btn btn-danger">
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            <form method="post" class="share-meal mt-3">
+                                                {% csrf_token %}
+                                                {{ post_form.as_p }}
+                                                <input type="hidden" value="{{meal.id}}" name="meal_id">
+                                                <button type="submit" name="share-meal" class="btn btn-outline-warning w-100">
+                                                    Share
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No meals for this date yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
- <div>
-  <h4>Water</h4>
-  {% if water_total %}
-  <p id="water-total">{{water_total}} ml</p>
-  <form method="post">
-    {% csrf_token %}
-    {{ water_form.as_p }}
-    <button type="submit" name="submit_water">Add Water</button>
-  </form> 
-  <form method="post" class="water-share">
-    {% csrf_token %}
-    {{ post_form.as_p }}
-    <button type="submit" name="share-water">Share</button>
-  </form>
- {% else %}
-     <p>No water for this date yet.</p>
- {% endif %}
- </div>
- <div>
-
-  <h4>Weight</h4>
-  {% if  weight %}
-    {% for num in weight %}
-    <form method="POST" class="weight-update">
-      <p><span class="wieght_num">{{num}}</span>kg</p>
-      <input type="hidden" name="weight_id" value="{{num.id}}">
-      {% csrf_token %}
-      {{ weight_form.as_p }}
-      <button type="submit" name="update_weight">Updtae</button><button type="submit" name="delete_weight">Delete</button>
-    </form>
-    <form method="post" class="share-weight">
-      {% csrf_token %}
-      {{ post_form.as_p }}
-      <button type="submit" name="share-weight">Share</button>
-    </form>
-    {% endfor %}
- {% else %}
-     <p>No weight for this date yet.</p>
- {% endif %}
- </div>
-
- <h4>workout</h4>
- {% if workout %}
-   {% for workout in workout%}
-   <p>{{workout}}</p>
-   <form method="post" class="workout-update">
-    <input type="hidden" name="workout_id" value="{{workout.id}}">
-    <p class="workout-duration" style="display: none;">{{workout.duration}}</p>
-    <p class="workout-name" style="display: none;">{{workout.name}}</p>
-    {% csrf_token %}
-    {{ workout_form.as_p }}
-    <button type="submit" name="update_workout">Updtae</button><button type="submit" name="delete_workout">Delete</button>
-  </form> 
-  <form method="post" class="share-workout">
-    {% csrf_token %}
-    {{ post_form.as_p }}
-    <button type="submit" name="share-workout">Share</button>
-  </form>
-      
-   {% endfor %}
-{% else %}
-    <p>No workoutfor in this date yet.</p>
-{% endif %}
-</div>
-
-<div>
-  <h4>Meals</h4>
-   {% if  meals_entries%}
-      {% for meal in  meals_entries%}
-        <p>{{meal.time}} : {{meal.content}}</p>
-        <img src="{{meal.file.url}}" >
-        <p class="meal-content" style="display: none;">{{meal.content}}</p>
-        <p class="meal-time" style="display: none;">{{meal.time|time:"H:i:s"}}</p>
-        <form method="post" class="meal-update" enctype="multipart/form-data">
-          <input type="hidden" name="meal_id" value="{{meal.id}}">
-          
-          {% csrf_token %}
-          {{ meals_form.as_p }}
-          <button type="submit" name="update_meal">Updtae</button><button type="submit" name="delete_meal">Delete</button>
-        </form>
-        <form method="post" class="share-meal">
-          {% csrf_token %}
-          {{ post_form.as_p }}
-          <input value="{{meal.id}}" name="meal_id">
-          <button type="submit" name="share-meal">Share</button>
-        </form>
-       {% endfor %}
-{% else %}
-    <p>No meals this in date yet.</p>
-{% endif %}
-
-</div>
 
 
-<footer class="add-form">
-  <div class="forms">
+<div class="container">
+  <div class="row">
     <!-- Water Form -->
-      <div>
-        <h5>Add Water</h5>
-        <form method="post">
-          {% csrf_token %}
-          {{ water_form.as_p }}
-          <button type="submit" name="submit_water">Add Water</button>
-        </form>  
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Add Water</h5>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            {{ water_form.as_p }}
+            <button type="submit" name="submit_water" class="btn btn-primary">Add Water</button>
+          </form>
+        </div>
       </div>
+    </div>
     
     <!-- Weight Form -->
-    <div>
-      <h5>Add Weight</h5>
-        <form method="post">
-          {% csrf_token %}
-          {{ weight_form.as_p }}
-          <button type="submit" name="submit_weight">Add Weight</button>
-        </form>
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h5 class="card-title mb-0">Add Weight</h5>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            {{ weight_form.as_p }}
+            <button type="submit" name="submit_weight" class="btn btn-success">Add Weight</button>
+          </form>
+        </div>
+      </div>
     </div>
     
     <!-- Workout Form -->
-    <div>
-      <h5>Add Workout</h5>
-        <form method="post">
-          {% csrf_token %}
-          {{ workout_form.as_p }}
-          <button type="submit" name="submit_workout">Add Workout</button>
-        </form>
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="card-title mb-0">Add Workout</h5>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+            {{ workout_form.as_p }}
+            <button type="submit" name="submit_workout" class="btn btn-info">Add Workout</button>
+          </form>
+        </div>
+      </div>
     </div>
     
-    
-    <!-- Miles Form -->
-    <div>
-      <h5>Add Meal</h5>
-      <form method="post" enctype="multipart/form-data">
-        <select name="fav-meal" class="fav-meal" >
-          {% if fav_meal %}
-              {% for meal in fav_meal %}
-                  <option value="{{meal.name}}">{{meal.name}}</option>
-              {% endfor %}
-          {% else %}
-              <option>No favorite meals yet.</option>
-          {% endif %}
-      </select>
-        {% csrf_token %}
-        {{ meals_form.as_p }}
-        <!-- <input type="file" name="file" accept="image/*"> -->
-        <button type="submit" name="submit_meal">Add Meal</button>
-      </form>
+    <!-- Meals Form -->
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header bg-warning text-white">
+          <h5 class="card-title mb-0">Add Meal</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="fav-meal" class="form-label">Favorite Meals</label>
+              <select name="fav-meal" class="form-select" id="fav-meal" >
+                {% if fav_meal %}
+                  {% for meal in fav_meal %}
+                    <option value="{{meal.name}}" data-content="{{ meal.content }}" >{{meal.name}}</option>
+                  {% endfor %}
+                {% else %}
+                  <option>No favorite meals yet.</option>
+                {% endif %}
+              </select>
+            </div>
+            <div class="meals_form">
+              {% csrf_token %}
+              {{ meals_form.as_p }}
+            </div>
+            <button type="submit" name="submit_meal" class="btn btn-warning">Add Meal</button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
-</footer>
-
-
-<script>
-    const update_date = document.querySelectorAll('input[type="date"]')
-    function convertDate(dateStr) {
-      const date = new Date(dateStr);
-      const formattedDate = date.toISOString().split('T')[0];
-      return formattedDate;
-  }
-
-  const inputDate = "{{current_date}}"
-  const outputDate = convertDate(inputDate)
-  update_date.forEach(input => {
-    input.value = outputDate
-  })
-  // fill the wieght info in the form
-  const updateWeight = document.querySelectorAll('.weight-update input[name="amount"]')
-  const weightNum = document.querySelectorAll('.wieght_num')
-  for (let i=0; i < weightNum.length; i++){
-    updateWeight[i].value = weightNum[i].innerText
-  }
-// fill the workout info in the form
-  const workoutName = document.querySelectorAll(".workout-name")
-  const workoutDuration= document.querySelectorAll(".workout-duration")
-  const updateWorkout = document.querySelectorAll('.workout-update input[name="duration"]')
-  const updateSelectWorkout = document.querySelectorAll('.workout-update select[name="name"]')
+</div>
+</div>
   
-  for (let i=0; i < updateWorkout.length; i ++) {
-    updateWorkout[i].value = workoutDuration[i].innerHTML
-    updateSelectWorkout[i].value = workoutName[i].innerHTML
-  }
-//fill the meals form
-const mealContent = document.querySelectorAll(".meal-content")
-const mealTime = document.querySelectorAll(".meal-time")
 
-const mealContentInput = document.querySelectorAll('.meal-update textarea[name="content"]')
-const mealTimeInput = document.querySelectorAll('.meal-update input[name="time"]')
 
-for (let i=0; i < mealContent.length; i++) {
-  mealContentInput[i].value = mealContent[i].innerHTML
-  mealTimeInput[i].value = mealTime[i].innerHTML 
-}
+<script src="{% static 'js/index.js' %}">
+  
 
-// share post form water
-const titleInputWater = document.querySelector('.water-share input[name="title"]')
-const waterTotal = document.querySelector('#water-total')
-const contentInputWater = document.querySelector('.water-share textarea[name="content"]')
-
-titleInputWater.value = `Water on the ${inputDate}`
-contentInputWater.value = `I drank ${waterTotal.innerText} today!`
-
-const hidePostWaterShare = document.querySelectorAll('.water-share p')
-hidePostWaterShare.forEach(p => {
-p.style.display = "none"
-})
-
-// share post form weight
-const weightFormPost = document.querySelectorAll(".share-weight p")
-const weightShareTitle = document.querySelectorAll('.share-weight input[name="title"]')
-const weightShareContent = document.querySelectorAll('.share-weight textarea[name="content"]')
-
-weightShareTitle.forEach(title => {
-  title.value = `Weight on the ${inputDate}`
-})
-for (let i=0; i < weightNum.length; i++){
-    weightShareContent[i].value = `I wieght ${weightNum[i].innerText} today!`
-  }
-  weightFormPost.forEach(p => {
-    p.style.display = "none"
-  })
-
-  // share post form workout
-const workoutFormPost = document.querySelectorAll(".share-workout p")
-const workoutShareTitle = document.querySelectorAll('.share-workout input[name="title"]')
-const workoutShareContent = document.querySelectorAll('.share-workout textarea[name="content"]')
-
-workoutShareTitle.forEach(title => {
-  title.value = `Workout on the ${inputDate}`
-})
-if (workoutName.length >0) {
-  for (let i=0; i < weightNum.length; i++){
-  workoutShareContent[i].value = `I wast ${ workoutName[i].innerText} for ${workoutDuration[i].innerHTML} Min.`
-  }
-  workoutFormPost.forEach(p => {
-    p.style.display = "none"
-  })
-}
-
-  // share post form meal
-
-const mealFormPost = document.querySelectorAll(".share-meal p")
-const mealShareTitle = document.querySelectorAll('.share-meal input[name="title"]')
-const mealShareContent = document.querySelectorAll('.share-meal textarea[name="content"]')
-
-mealShareTitle.forEach(title => {
-  title.value = `Meal on the ${inputDate}`
-})
-for (let i=0; i < mealContent.length; i++){
-  mealShareContent[i].value = `I ate ${ mealContent[i].innerText}.`
-  }
-  mealFormPost.forEach(p => {
-    p.style.display = "none"
-  })
  </script>
 {% endblock %}
 

@@ -22,34 +22,67 @@
       <div class="row">
         <div class="col-sm-2">
           {% block sidebar %}
-          {% if files %}
-              {% for file in files %}
-                  <img src="{{ file.file.url }}" alt="Uploaded file" style="max-width: 100px; border-radius: 50%;">
-              {% endfor %}
-          {% endif %}
-            <ul class="sidebar-nav">
-              <li><a href="{% url 'index' %}">Diet Log</a></li>
-              <li><a href="{% url 'fav_meal' %}">Fav Meal</a></li>
-              <li><a href="{% url 'dietBlog:post_list' %}">Diet Blog</a></li>
-              <li><a href="{% url 'profile' %}">Profile</a></li>
-              <li><a href="{% url 'inbox' %}">Inbox</a></li>
-              {% if user.is_authenticated %}
-              <button  onclick="document.getElementById('logout-form').submit()">
-                  Logout
-              </button>
-              <form id="logout-form" method="POST" action="{% url 'logout' %}" class="hidden">
-                  {% csrf_token %}
-              </form>
-          {% else %}
-              <button >
-                  Login
-              </button>
-          {% endif %}
-            </ul>
+          <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container-fluid">
+                <!-- Profile Image -->
+                {% if files %}
+                    {% for file in files %}
+                        <img src="{{ file.file.url }}" alt="Profile" class="rounded-circle me-3" style="max-width: 50px; max-height: 50px; object-fit: cover;">
+                    {% endfor %}
+                {% endif %}
+        
+                <!-- Toggle button for mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+        
+                <!-- Navigation Links -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}">Diet Log</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'fav_meal' %}">Fav Meal</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dietBlog:post_list' %}">Diet Blog</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'inbox' %}">Inbox</a>
+                        </li>
+                    </ul>
+        
+                    <!-- Authentication Links -->
+                    <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="document.getElementById('logout-form').submit()">
+                                    Logout
+                                </a>
+                                <form id="logout-form" method="POST" action="{% url 'logout' %}" class="d-none">
+                                    {% csrf_token %}
+                                </form>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
           {% endblock %}
         </div>
-        <div class="col-sm-10 ">{% block content %}{% endblock %}</div>
+        <div class="col-sm-12 ">{% block content %}
+          {% endblock %}</div>
       </div>
-    </div> 
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
   </body>
 </html>
