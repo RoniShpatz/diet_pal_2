@@ -27,11 +27,9 @@
               {% endif %}
               <p>{{ post.content }}</p>
               <p>by {{ post.author }} on {{ post.created_at }}</p>
-              {% for file in files_with_meal %}
-              {% if file.meal_id == post.meal.id %}
-                  <img src="{{ file.file.url }}" alt="Meal Image" style="max-width: 200px; border-radius: 5px;">
-              {% endif %}
-              {% endfor %}
+              {% if post.meal and post.meal.file %}
+              <img src="{{ post.meal.file.url }}" alt="Meal Image" style="max-width: 200px; border-radius: 5px;">
+          {% endif %}
           </div>
        
       {% endfor %}
