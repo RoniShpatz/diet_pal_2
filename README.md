@@ -2,6 +2,7 @@
 a diet log and blog
 
 website: https://diet-pal-2.onrender.com
+github: https://github.com/RoniShpatz/diet_pal_2
 
 Overview of Diet Pal App
 
