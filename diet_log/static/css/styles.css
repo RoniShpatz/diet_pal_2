@@ -1,11 +1,46 @@
-.sidebar-nav {
-    margin-top: 20px;
-    padding: 0;
-    list-style: none;
-  }
   
+pre {
+  display: none;
+}
+
 .index-container{
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#water-total:hover{
+  color: red;
+  text-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+#weight-info:hover {
+  color: red;
+  text-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+#workout-info:hover {
+  color: red;
+  text-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+
+.meal:hover{
+  color: var(--bs-danger) !important; 
+  cursor: pointer !important;
+}
+
+textarea {
+  width: 100%; 
+  height: 150px; 
+  resize: none;
+}
+
+.name-meal:hover{
+  color: red;
+  text-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
 }

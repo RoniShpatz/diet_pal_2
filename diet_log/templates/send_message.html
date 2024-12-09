@@ -1,24 +1,22 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+<div class="container mt-4">  <!-- Main container for the page -->
+    <div class="border bg-light p-4 rounded">  <!-- Light grey background section -->
+        {% if messages %}
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-
-<h1>Send a Message</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Send Message</button>
-</form>
-
-
-
-
-    
-  {% endblock %}
+        <h1>Send a Message</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Send Message</button>  <!-- Styled button -->
+        </form>
+    </div>  <!-- Close the light grey section -->
+</div>  <!-- Close the main container -->
+{% endblock %}

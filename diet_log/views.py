@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404, redirect
 from dietBlog.forms import PostForm
 from .utils import crop_and_resize_image
 from django.contrib.auth.models import User
-
+from django.urls import path
 
 
 
@@ -82,6 +82,10 @@ def index(request):
                 weight_entry = weight_form.save(commit=False)
                 weight_entry.user_id = request.user
                 weight_entry.date = weight_form.cleaned_data['date']
+                existing_entry = Wieght.objects.filter(user_id=request.user.id, date=weight_entry.date).first()
+                if existing_entry:
+                    messages.error(request, 'An entry for this date already exists. Please update it instead.')
+                    return redirect('index')
                 weight_entry.save()
                 messages.success(request, 'Weight entry added successfully!')
                 return redirect('index')
@@ -108,6 +112,10 @@ def index(request):
                 workout_entry = workout_form.save(commit=False)
                 workout_entry.user_id = request.user
                 workout_entry.date = workout_form.cleaned_data['date']
+                existing_entry = Workout.objects.filter(user_id=request.user.id, date=workout_entry.date).first()
+                if existing_entry:
+                    messages.error(request, 'An entry for this date already exists. Please update it instead.')
+                    return redirect('index')
                 workout_entry.save()
                 messages.success(request, 'Workout entry added successfully!')
                 return redirect('index')
@@ -259,7 +267,7 @@ def profile(request):
     profile_photo_form = UploadForm()
 
     if request.method == 'POST':
-        if 'uploade-profile-photo' in request.POST:
+        if 'upload-profile-photo' in request.POST:
             profile_photo_form = UploadForm(request.POST, request.FILES)
             
             if profile_photo_form.is_valid():
@@ -296,7 +304,7 @@ def profile(request):
                 for field, errors in profile_photo_form.errors.items():
                     messages.error(request, f"{field}: {errors}")
 
-        elif 'dalete-profile-photo' in request.POST:
+        elif 'delete-profile-photo' in request.POST:
             photo_id = request.POST.get("photo-id")
             try:
                 current_photo = get_object_or_404(UploadedFile, id=photo_id)
@@ -336,7 +344,7 @@ def fav_meal(request):
                 return redirect('fav_meal')
             else:
                 print("Fav Meal Form Errors:", fav_meal_form.errors)
-        elif 'updtae-fav-meal' in request.POST:
+        elif 'update-fav-meal' in request.POST:
             fav_meal_id = request.POST.get('fav_meal_id')
             fav_entry = get_object_or_404(FavMeals, id=fav_meal_id, user_id=request.user)
             fav_meal_form = FavMealsForm(request.POST, instance=fav_entry)

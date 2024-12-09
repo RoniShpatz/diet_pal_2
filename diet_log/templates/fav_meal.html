@@ -1,40 +1,58 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
 {% block content %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-  {% if messages %}
-  <ul class="messages">
-      {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-      {% endfor %}
-  </ul>
-  {% endif %}
-<h2>Favorite Meals</h2>
-<ul>
-    {% if fav_meal %}
-        {% for meal in fav_meal %}
-            <li value="{{meal.name}}"><span>{{meal.name}}</span>
-            <p>{{meal.content}}</p>
-            <div>
-                <form name="fav-meal-form" class="fav-meal-form" method="post">
+    <div class="container fav-meal" style="text-align: center;">
+        <h2 class="my-4">Favorite Meals</h2>
+
+        {% if fav_meal %}
+            <div class="row">
+                {% for meal in fav_meal %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title name-meal">{{ meal.name }}</h5>
+                                <p class="card-text content-meal">{{ meal.content }}</p>
+                                <form name="fav-meal-form" class="fav-meal-form fav-meal-update" method="POST">
+                                    {% csrf_token %}
+                                    {{ fav_meal_form.as_p }}
+                                    <input type="hidden" name="fav_meal_id" value="{{ meal.id }}">
+                                    
+                                    <button type="submit" name="update-fav-meal" class="btn btn-warning">Update</button>
+                                    <button type="submit" name="delete-fav-meal" class="btn btn-danger">Delete</button>
+                                    
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">No favorite meals yet.</div>
+        {% endif %}
+
+        <h3 class="my-4">Add New Favorite Meal</h3>
+        <div class="card">
+            <div class="card-body">
+                <form name="fav-meal-form" class="fav-meal-form" method="POST">
                     {% csrf_token %}
                     {{ fav_meal_form.as_p }}
-                    <input type="hidden"  name="fav_meal_id" value="{{meal.id}}">
-                    <button type="submit" name="updtae-fav-meal">Updtae</button>
-                    <button type="submit" name="delete-fav-meal">Delete</button>
+                    <button type="submit" name="submit-fav-meal" class="btn btn-primary">Add Meal</button>
                 </form>
             </div>
-            </li>
-        {% endfor %}
-    {% else %}
-        <li>No favorite meals yet.</li>
-    {% endif %}
-</ul>
-<h3>Add New Favorite Meal</h3>
-<form name="fav-meal-form" class="fav-meal-form" method="post">
-    {% csrf_token %}
-    {{ fav_meal_form.as_p }}
-    <button type="submit" name="submit-fav-meal">Add Meal</button>
-</form>
+        </div>
+    </div>
 
-{% endblock content %}
+<script src="{% static 'js/fav_meal.js' %}">
+
+</script>
+{% endblock %}

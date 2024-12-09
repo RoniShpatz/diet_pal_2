@@ -2,6 +2,7 @@
 
 {% block content %}
 {% load static %}
+
   {% if messages %}
   <ul class="messages">
       {% for message in messages %}
@@ -38,7 +39,7 @@
         <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="card-title mb-0">Water</h4>
+                    <h4 class="card-title mb-0" id="water-h">Water</h4>
                 </div>
                 <div class="card-body">
                     {% if water_total %}
@@ -47,7 +48,7 @@
                                 {{water_total}} ml
                             </h5>
                         </div>
-                        <form method="post" class="mb-3">
+                        <form method="post" class="mb-3" id="water-form">
                             {% csrf_token %}
                             <div class="mb-3">
                                 {{ water_form.as_p }}
@@ -82,7 +83,7 @@
                             <div class="card mb-3">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h5 class="mb-0">
+                                        <h5 class="mb-0" id="weight-info">
                                             <span class="weight_num">{{num}}</span> kg
                                         </h5>
                                     </div>
@@ -103,7 +104,7 @@
                                     </form>
                                 </div>
                             </div>
-                            <form method="post" class="share-weight mb-3">
+                            <form method="post" class="share-weight mb-3" id="wieght-share">
                                 {% csrf_token %}
                                 {{ post_form.as_p }}
                                 <button type="submit" name="share-weight" class="btn btn-outline-success w-100">
@@ -129,7 +130,7 @@
                         {% for workout in workout %}
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{workout}}</h5>
+                                    <h5 class="card-title" id="workout-info"><span class="workout-name">{{workout.name}}</span> for <span class="workout-dou">{{workout.duration}} </span>Min</h5>
                                     <form method="post" class="workout-update">
                                         <input type="hidden" name="workout_id" value="{{workout.id}}">
                                         {% csrf_token %}
@@ -177,7 +178,7 @@
                                 <div class="col-md-4 mb-3">
                                     <div class="card">
                                         <div class="card-body">
-                                            <h5 class="card-title">{{meal.time}} : {{meal.content}}</h5>
+                                            <h5 class="card-title meal" ><span class="meal-time">{{meal.time}}</span> : <span class="meal-content">{{meal.content}}</span></h5>
                                             {% if meal.file %}
                                                 <img src="{{meal.file.url}}" class="img-fluid rounded mb-3">
                                             {% endif %}

@@ -2,26 +2,29 @@
 {% block content %}
 
   {% if messages %}
-  <ul class="messages">
+  <ul class="list-unstyled">
       {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      <li{% if message.tags %} class="alert alert-info {{ message.tags }}"{% endif %}>{{ message }}</li>
       {% endfor %}
   </ul>
   {% endif %}
 
-
-    <h1 id="title">{{ post.title }}</h1>
-    <p><strong>Author:</strong> <span >{{ post.author }}</span></p>
-    <p><strong>Created at:</strong><span >{{ post.created_at }}</span> </p>
-    <p id="content">{{ post.content }}</p>
-    <form method="post" class="post-update">
-        <input type="hidden" name="post_id" value="{{post.id}}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" name="update_post">Updtae</button>
-        <button type="submit" name="delete_post">Delete</button>
-      </form>
-    <a href="{% url 'dietBlog:post_list' %}">Back to Posts</a>
+    <div class="container mt-4">
+        <h1 id="title">{{ post.title }}</h1>
+        <p><strong>Author:</strong> <span>{{ post.author }}</span></p>
+        <p><strong>Created at:</strong> <span>{{ post.created_at }}</span></p>
+        <p id="content">{{ post.content }}</p>
+        <form method="post" class="post-update">
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" name="update_post" class="btn btn-primary">Update</button>
+            <button type="submit" name="delete_post" class="btn btn-danger">Delete</button>
+        </form>
+        <a href="{% url 'dietBlog:post_list' %}" class="btn btn-secondary mt-3">Back to Posts</a>
+    </div>
 
 
 <script>
