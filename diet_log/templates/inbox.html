@@ -1,8 +1,8 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<div class="container mt-4">  <!-- Main container for the page -->
-    <div class="border bg-light p-4 rounded">  <!-- Light grey background section -->
+<div class="container mt-4"> 
+    <div class="border bg-light p-4 rounded">  
         {% if messages %}
             <ul class="list-unstyled">
                 {% for message in messages %}
@@ -15,13 +15,13 @@
 
         <h3>Received Messages</h3>
         {% for message in received_messages %}
-            <div class="border-bottom mb-2 pb-2">  <!-- Adding bottom border for separation -->
+            <div class="border-bottom mb-2 pb-2">  
                 From: {{ message.sender.username }}
                 <a href="{% url 'message_detail' message.id %}">
                     {{ message.content|truncatewords:10 }}
                 </a>
                 {% if not message.is_read %}
-                    <span class="text-danger">New!</span>  <!-- Highlight "New!" message in red -->
+                    <span class="text-danger">New!</span> 
                 {% endif %}
             </div>
         {% empty %}
@@ -30,7 +30,7 @@
 
         <h3>Sent Messages</h3>
         {% for message in sent_messages %}
-            <div class="border-bottom mb-2 pb-2">  <!-- Adding bottom border for separation -->
+            <div class="border-bottom mb-2 pb-2">  
                 To: {{ message.recipient.username }}
                 <a href="{% url 'message_detail' message.id %}">
                     {{ message.content|truncatewords:10 }}
@@ -40,9 +40,9 @@
             <p>No sent messages.</p>
         {% endfor %}
         
-        <div class="text-center mt-3">  <!-- Centering the "Send New Message" link -->
+        <div class="text-center mt-3">  
             <a href="{% url 'send_message' %}" class="btn btn-primary">Send a New Message</a>
         </div>
-    </div>  <!-- Close the light grey section -->
-</div>  <!-- Close the main container -->
+    </div> 
+</div>  
 {% endblock %}

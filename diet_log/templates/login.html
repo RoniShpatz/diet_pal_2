@@ -3,18 +3,18 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container mt-4">  <!-- Main container for the page -->
-    <div class="border bg-light p-4 rounded">  <!-- Light grey background section -->
+<div class="container mt-4">  
+    <div class="border bg-light p-4 rounded">  
         <form method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-primary">Login</button>  <!-- Styled button -->
+            <button type="submit" class="btn btn-primary">Login</button>  
             <a href="{% url 'signup' %}" class="btn btn-secondary">Sign Up</a>
         </form>
 
-        <small class="text-muted d-block mt-2">  <!-- Block display for better spacing -->
+        <small class="text-muted d-block mt-2"> 
             <a href="{% url 'password_reset' %}">Forgot Password?</a>
         </small>
-    </div>  <!-- Close the light grey section -->
-</div>  <!-- Close the main container -->
+    </div>  
+</div>  
 {% endblock %}

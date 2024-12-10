@@ -1,8 +1,8 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<div class="container mt-4">  <!-- Main container for the page -->
-    <div class="border bg-light p-4 rounded">  <!-- Light grey background section -->
+<div class="container mt-4">  
+    <div class="border bg-light p-4 rounded"> 
         {% if messages %}
             <ul class="list-unstyled">
                 {% for message in messages %}
@@ -15,8 +15,8 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Send Message</button>  <!-- Styled button -->
+            <button type="submit" class="btn btn-primary">Send Message</button>  
         </form>
-    </div>  <!-- Close the light grey section -->
-</div>  <!-- Close the main container -->
+    </div>  
+</div>  
 {% endblock %}

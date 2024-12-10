@@ -2,8 +2,8 @@
 
 {% block content %}
 
-<div class="container mt-4">  <!-- Main container for the page -->
-    <div class="border border-light bg-light p-4 rounded">  <!-- Light grey frame -->
+<div class="container mt-4">  
+    <div class="border border-light bg-light p-4 rounded"> 
         {% if messages %}
         <ul class="list-unstyled">
             {% for message in messages %}
@@ -16,9 +16,9 @@
         
         {% if files %}
             <h3>Your Uploaded Files:</h3>
-            <div class="row justify-content-center">  <!-- Centering the uploaded files section -->
+            <div class="row justify-content-center">  
                 {% for file in files %}
-                    <div class="col-md-4 mb-3 text-center">  <!-- Each file in a centered column -->
+                    <div class="col-md-4 mb-3 text-center">  
                         <img src="{{ file.file.url }}" alt="Uploaded file" class="img-fluid mb-2">
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
